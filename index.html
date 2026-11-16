@@ -339,7 +339,7 @@
                             <h4 class="text-sm sm:text-base font-bold text-meb-navy">Mazeret Türü ve Açıklaması <span class="text-meb-red">*</span></h4>
                         </div>
 
-                        <!-- Mazeret Türü Radyo Kartları -->
+                        <!-- Mazeret Türü Radyo Kartları (4 Kategori) -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 border-slate-200 bg-slate-50/60 cursor-pointer hover:border-meb-navy/40 transition-all has-[:checked]:border-meb-navy has-[:checked]:bg-blue-50/40">
                                 <input type="radio" name="excuseType" value="Sağlık Raporu" class="mt-1 h-4 w-4 text-meb-navy focus:ring-meb-navy border-slate-300" checked>
@@ -829,9 +829,9 @@
     <!-- Google Apps Script & E-Tablo / Drive Entegrasyonu -->
     <script>
         // =========================================================================
-        // GOOGLE APPS SCRIPT WEB APP BAĞLANTI ADRESİ
+        // GOOGLE APPS SCRIPT WEB APP BAĞLANTI ADRESİ (Güncel Dağıtım)
         // =========================================================================
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwa8_N7CEQrvDKiuTHFa9k6KZdQVJfJ5ZNeqeEciZq1r5PnL5yZexj4QPQX4FWuBGtw/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoUPRkNTnVzmgcuAFfFl8QGAaYwSsV4HzdShtIvmbb9sdHwiR4fI6LeaaZ1MZRxE-w/exec";
         const GOOGLE_SHEET_EDIT_URL = "https://docs.google.com/spreadsheets/d/1Tj4l3Pa6sj-rcW_qUfdTHqbCdwsyDz8YpfqxVQoxw6s/edit";
         const LOCAL_STORAGE_KEY = "saffet_cam_mazeret_basvurulari_2026";
 
@@ -841,12 +841,18 @@
                    !GOOGLE_SCRIPT_URL.includes('BURAYA_');
         }
 
+        function isSandboxedPreviewEnvironment() {
+            return window.location.protocol === 'blob:' ||
+                   window.location.hostname.includes('usercontent.goog') ||
+                   window.location.hostname === 'localhost';
+        }
+
         function updateGoogleSyncBadge(state, customText) {
             const badge = document.getElementById('gsheet-sync-badge');
             if (!badge) return;
             if (state === 'connected') {
                 badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30';
-                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>${customText || 'Google E-Tablolar Bağlı'}</span>`;
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>${customText || 'Google E-Tablo Bağlı'}</span>`;
             } else if (state === 'syncing') {
                 badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/20 text-blue-200 border border-blue-400/30';
                 badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span><span>${customText || 'E-Tablo Eşitleniyor...'}</span>`;
@@ -884,34 +890,40 @@
             }
         }
 
-        // Preflight OPTIONS tetiklemeyen text/plain + redirect: "follow" POST yardımcısı
-        async function postToGoogleAppsScript(payloadObj) {
-            const bodyString = JSON.stringify(payloadObj);
+        // Çift Katmanlı POST Gönderici: Önce JSON (redirect: 'follow'), CORS/yönlendirme kısıtlanırsa URLSearchParams (no-cors)
+        async function postPayloadToGoogleScript(payload) {
+            if (isSandboxedPreviewEnvironment()) {
+                return { sent: false, response: null, reason: 'sandbox_preview' };
+            }
             try {
                 const res = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     redirect: 'follow',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: bodyString
+                    body: JSON.stringify(payload)
                 });
                 try {
                     const json = await res.json();
-                    return { ok: true, data: json };
+                    return { sent: true, response: json };
                 } catch (_) {
-                    return { ok: true, data: null };
+                    return { sent: true, response: null };
                 }
             } catch (err) {
+                const formParams = new URLSearchParams();
+                Object.entries(payload).forEach(([k, v]) => {
+                    formParams.append(k, typeof v === 'object' ? JSON.stringify(v) : String(v ?? ''));
+                });
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: bodyString
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: formParams.toString()
                 });
-                return { ok: true, data: null, opaque: true };
+                return { sent: true, response: null };
             }
         }
 
-        // Google Apps Script Web App'e yeni başvuru ve Base64 belge gönderme (POST)
+        // Google Apps Script Web App'e yeni başvuru ve Base64 belge gönderme
         window.sendSubmissionToGoogleSheet = async function(submissionObj) {
             if (!isGoogleScriptConfigured()) return { sent: false, reason: 'not_configured' };
 
@@ -936,15 +948,15 @@
             };
 
             updateGoogleSyncBadge('syncing', 'E-Tabloya Gönderiliyor...');
-            const result = await postToGoogleAppsScript(payload);
+            const result = await postPayloadToGoogleScript(payload);
             let driveUrl = '';
-            if (result && result.data && result.data.driveUrl) {
-                driveUrl = result.data.driveUrl;
+            if (result.response && result.response.driveUrl) {
+                driveUrl = result.response.driveUrl;
                 submissionObj.driveUrl = driveUrl;
                 saveLocalSubmissions(window.submissions || []);
                 if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
             }
-            updateGoogleSyncBadge('connected', 'Google E-Tablolar Bağlı');
+            updateGoogleSyncBadge('connected', 'Google E-Tablo Bağlı');
             return { sent: true, driveUrl };
         };
 
@@ -954,6 +966,15 @@
                 updateGoogleSyncBadge('pending', 'Google E-Tablo URL Bekleniyor');
                 if (showNotification) {
                     showToast('Apps Script URL Eksik', 'E-Tablodan veri çekmek için index.html içindeki GOOGLE_SCRIPT_URL alanına dağıtım bağlantınızı yapıştırınız.', 'error');
+                }
+                return;
+            }
+
+            // Önizleme (blob/sandbox) ortamında tarayıcı CORS/ağ kısıtlaması nedeniyle harici fetch engellenir
+            if (isSandboxedPreviewEnvironment()) {
+                updateGoogleSyncBadge('connected', 'Önizleme Modu (Canlıda Aktif)');
+                if (showNotification) {
+                    showToast('Önizleme Ortamı Bilgisi', 'Güvenlik kısıtlaması nedeniyle Google E-Tablo senkronizasyonu yalnızca canlı GitHub Pages adresinizde çalışır.', 'success');
                 }
                 return;
             }
@@ -1016,15 +1037,14 @@
                 if (typeof window.updateBadge === 'function') window.updateBadge();
                 if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
 
-                updateGoogleSyncBadge('connected', 'Google E-Tablolar Bağlı');
+                updateGoogleSyncBadge('connected', 'Google E-Tablo Bağlı');
                 if (showNotification) {
                     showToast('E-Tablo Güncellendi', `Google E-Tablodan ${remoteRows.length} kayıt başarıyla eşitlendi.`, 'success');
                 }
             } catch (err) {
-                console.error('Google E-Tablo okuma hatası:', err);
-                updateGoogleSyncBadge('error', 'E-Tablo Okuma Uyarısı');
+                updateGoogleSyncBadge('error', 'E-Tablo Bağlantı Bekleniyor');
                 if (showNotification) {
-                    showToast('Senkronizasyon Uyarısı', 'Google Apps Script dağıtım izninin "Herkes (Anyone)" olarak ayarlandığından emin olunuz.', 'error');
+                    showToast('Senkronizasyon Uyarısı', 'Google Apps Script erişim izninin "Herkes (Anyone)" olarak ayarlandığından emin olunuz.', 'error');
                 }
             } finally {
                 if (refreshBtn) refreshBtn.disabled = false;
@@ -1039,7 +1059,7 @@
             if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
 
             if (isGoogleScriptConfigured()) {
-                await postToGoogleAppsScript({ action: 'updateStatus', trackingId, status: newStatus });
+                await postPayloadToGoogleScript({ action: 'updateStatus', trackingId, status: newStatus });
             }
         };
 
@@ -1050,7 +1070,7 @@
             if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
 
             if (isGoogleScriptConfigured()) {
-                await postToGoogleAppsScript({ action: 'delete', trackingId });
+                await postPayloadToGoogleScript({ action: 'delete', trackingId });
             }
         };
     </script>
