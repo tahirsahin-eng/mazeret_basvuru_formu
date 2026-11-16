@@ -829,9 +829,9 @@
     <!-- Google Apps Script & E-Tablo / Drive Entegrasyonu -->
     <script>
         // =========================================================================
-        // GOOGLE APPS SCRIPT WEB APP BAĞLANTI ADRESİ (Yetkilendirilmiş Dağıtım)
+        // GOOGLE APPS SCRIPT WEB APP BAĞLANTI ADRESİ
         // =========================================================================
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVw7kFpm9skN3Wl4tH0zjD9_RHus0D9o2bSMycpS1cEz0hXkXJFmSnQH3kqXNH5RjB/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwa8_N7CEQrvDKiuTHFa9k6KZdQVJfJ5ZNeqeEciZq1r5PnL5yZexj4QPQX4FWuBGtw/exec";
         const GOOGLE_SHEET_EDIT_URL = "https://docs.google.com/spreadsheets/d/1Tj4l3Pa6sj-rcW_qUfdTHqbCdwsyDz8YpfqxVQoxw6s/edit";
         const LOCAL_STORAGE_KEY = "saffet_cam_mazeret_basvurulari_2026";
 
@@ -894,11 +894,12 @@
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: bodyString
                 });
-                let json = null;
                 try {
-                    json = await res.json();
-                } catch (_) {}
-                return { ok: true, data: json };
+                    const json = await res.json();
+                    return { ok: true, data: json };
+                } catch (_) {
+                    return { ok: true, data: null };
+                }
             } catch (err) {
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -906,11 +907,11 @@
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: bodyString
                 });
-                return { ok: true, data: null };
+                return { ok: true, data: null, opaque: true };
             }
         }
 
-        // Google Apps Script Web App'e yeni başvuru ve Base64 belge gönderme (POST - CORS Uyumlu)
+        // Google Apps Script Web App'e yeni başvuru ve Base64 belge gönderme (POST)
         window.sendSubmissionToGoogleSheet = async function(submissionObj) {
             if (!isGoogleScriptConfigured()) return { sent: false, reason: 'not_configured' };
 
@@ -935,21 +936,16 @@
             };
 
             updateGoogleSyncBadge('syncing', 'E-Tabloya Gönderiliyor...');
-            try {
-                const result = await postToGoogleAppsScript(payload);
-                const driveUrl = result.data && result.data.driveUrl ? result.data.driveUrl : '';
-                if (driveUrl) {
-                    submissionObj.driveUrl = driveUrl;
-                    saveLocalSubmissions(window.submissions || []);
-                    if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
-                }
-                updateGoogleSyncBadge('connected', 'Google E-Tablolar Bağlı');
-                return { sent: true, driveUrl };
-            } catch (err) {
-                console.error('Google E-Tablo gönderim hatası:', err);
-                updateGoogleSyncBadge('error', 'Gönderim Hatası');
-                return { sent: false, error: err };
+            const result = await postToGoogleAppsScript(payload);
+            let driveUrl = '';
+            if (result && result.data && result.data.driveUrl) {
+                driveUrl = result.data.driveUrl;
+                submissionObj.driveUrl = driveUrl;
+                saveLocalSubmissions(window.submissions || []);
+                if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
             }
+            updateGoogleSyncBadge('connected', 'Google E-Tablolar Bağlı');
+            return { sent: true, driveUrl };
         };
 
         // Google Apps Script Web App üzerinden E-Tablo kayıtlarını çekme (GET)
