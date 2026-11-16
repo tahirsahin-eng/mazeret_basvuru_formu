@@ -1,0 +1,2798 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saffet Çam Ortaokulu - Mazeret Sınavı Başvuru Sistemi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        meb: {
+                            red: '#E30A17',
+                            darkred: '#B80711',
+                            navy: '#0F294A',
+                            blue: '#1E40AF',
+                            light: '#F8FAFC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Üst Kurumsal Başlık -->
+    <header class="bg-meb-navy text-white shadow-lg border-b-4 border-meb-red print:hidden">
+        <div class="max-w-5xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <!-- Kurum Logosu ve İsmi -->
+                <div class="flex items-center gap-4 text-center md:text-left flex-col sm:flex-row">
+                    <div class="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 shadow-inner">
+                        <!-- Kurumsal Okul / MEB İkonu -->
+                        <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-meb-red text-white mb-1 tracking-wide uppercase">
+                            T.C. MİLLÎ EĞİTİM BAKANLIĞI
+                        </div>
+                        <h1 class="text-lg sm:text-xl md:text-2xl font-bold tracking-tight leading-snug">
+                            Yalova Merkez Saffet Çam Ortaokulu Müdürlüğü
+                        </h1>
+                        <p class="text-slate-300 text-xs sm:text-sm font-medium mt-0.5">
+                            2026-2027 Eğitim Öğretim Yılı 1. Dönem 1. Ortak Yazılı Sınavlar Mazeret Başvuru Sistemi
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Navigasyon / Sekme Butonları -->
+                <div class="flex items-center gap-2 bg-white/10 p-1.5 rounded-xl border border-white/15 shrink-0">
+                    <button type="button" id="tab-form-btn" onclick="switchTab('form')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-meb-navy shadow-sm transition-all flex items-center gap-1.5">
+                        <i data-lucide="file-edit" class="w-4 h-4"></i>
+                        <span>Başvuru Formu</span>
+                    </button>
+                    <button type="button" id="tab-admin-btn" onclick="switchTab('admin')" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold text-white hover:bg-white/10 transition-all flex items-center gap-1.5">
+                        <i data-lucide="folder-kanban" class="w-4 h-4"></i>
+                        <span>Okul İdaresi / Başvuru Takip Paneli</span>
+                        <span id="submission-count-badge" class="ml-0.5 px-1.5 py-0.2 bg-meb-red text-white text-[11px] rounded-full">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Kritik Tarih Uyarı Bandı -->
+    <div class="bg-amber-50 border-b border-amber-200 text-amber-950 print:hidden">
+        <div class="max-w-5xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm">
+            <div class="flex items-center gap-2.5">
+                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-amber-700">
+                    <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+                </span>
+                <p>
+                    <strong class="font-bold text-meb-darkred">SON BAŞVURU TARİHİ:</strong> 
+                    <span class="font-semibold underline decoration-amber-400 decoration-2">20 Kasım 2026 Cuma mesai bitimine kadar</span> başvuru yapılmalıdır.
+                </p>
+            </div>
+            <div class="text-xs font-medium text-amber-800 bg-amber-100/80 px-3 py-1 rounded-lg border border-amber-200/80 shrink-0">
+                Mazeret Sınavları: <strong>23 - 27 Kasım 2026</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ana İçerik Alanı -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+
+        <!-- Bildirim / Hata Mesaj Kutusu (Alert yerine özel bildirim alanı) -->
+        <div id="toast-container" class="hidden fixed top-5 right-5 z-50 max-w-md w-full bg-white border-l-4 border-meb-red shadow-2xl rounded-xl p-4 transition-all duration-300 print:hidden">
+            <div class="flex items-start gap-3">
+                <div id="toast-icon" class="text-meb-red mt-0.5">
+                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 id="toast-title" class="text-sm font-bold text-slate-900">Uyarı</h4>
+                    <p id="toast-message" class="text-xs text-slate-600 mt-1 leading-relaxed"></p>
+                </div>
+                <button type="button" onclick="hideToast()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== SEKME 1: BAŞVURU FORMU VE DUYURU ==================== -->
+        <div id="view-form" class="space-y-6">
+
+            <!-- Resmi Duyuru Metni Kartı (Açılır/Kapanır ve Kopyalanabilir) -->
+            <section class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden print:hidden">
+                <div class="bg-slate-50 px-5 py-3.5 border-b border-slate-200 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-lg bg-meb-navy/10 text-meb-navy flex items-center justify-center">
+                            <i data-lucide="megaphone" class="w-4 h-4"></i>
+                        </span>
+                        <div>
+                            <h2 class="text-sm sm:text-base font-bold text-meb-navy">Veli ve Öğrenci Bilgilendirme Duyurusu</h2>
+                            <p class="text-[11px] text-slate-500">03-13 Kasım 2026 Ortak Sınavları Mazeret Başvuru Usulü</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="copyAnnouncement()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-meb-navy transition-colors shadow-xs" title="Duyuru metnini WhatsApp/SMS paylaşımı için kopyala">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            <span class="hidden sm:inline">Duyuruyu Kopyala</span>
+                        </button>
+                        <button type="button" onclick="toggleAnnouncement()" id="announcement-toggle-btn" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-200/60 transition-colors" aria-label="Duyuruyu Daralt/Genişlet">
+                            <i data-lucide="chevron-up" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="announcement-body" class="p-5 sm:p-6 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-3 bg-gradient-to-b from-white to-slate-50/50">
+                    <p class="font-semibold text-meb-navy">Değerli Velilerimiz ve Sevgili Öğrencilerimiz,</p>
+                    <p id="announcement-text">
+                        Okulumuzda <strong>03 - 13 Kasım 2026</strong> tarihleri arasında gerçekleştirilen 1. Dönem 1. Ortak Yazılı Sınavlarına; sağlık raporu, resmi izin belgesi veya okul idaresince kabul edilebilir geçerli bir mazereti nedeniyle katılamayan öğrencilerimiz için <strong>23 - 27 Kasım 2026</strong> tarihleri arasında mazeret sınavları yapılacaktır.
+                    </p>
+                    <p>
+                        Mazeret sınavlarına katılacak öğrencilerimizin mağduriyet yaşamamaları adına; <strong>sağlık raporlarını, izin belgelerini veya geçerli mazeretlerini gösterir resmî belgelerini</strong> aşağıda yer alan başvuru formunu eksiksiz doldurarak <strong>en geç 20 Kasım 2026 Cuma günü mesai bitimine kadar</strong> okulumuz müdürlüğüne bildirmeleri gerekmektedir. Belirtilen tarihten sonra yapılan başvurular ve belgesiz mazeret bildirimleri mevzuat gereği değerlendirmeye alınamayacaktır.
+                    </p>
+                    <div class="pt-1 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 border-t border-slate-100">
+                        <span>Bilgilerinize sunar, öğrencilerimize başarılar dileriz.</span>
+                        <span class="font-bold text-meb-navy">Saffet Çam Ortaokulu Müdürlüğü</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Başvuru Formu Kartı -->
+            <form id="excuse-form" novalidate class="bg-white rounded-2xl shadow-md border border-slate-200/90 overflow-hidden print:hidden">
+                <div class="bg-meb-navy px-6 py-4 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <i data-lucide="clipboard-check" class="w-5 h-5 text-red-400"></i>
+                        <h3 class="text-base sm:text-lg font-bold">Mazeret Sınavı Başvuru ve Belge Yükleme Formu</h3>
+                    </div>
+                    <span class="text-xs text-slate-300 hidden sm:inline">* Zorunlu alanlar</span>
+                </div>
+
+                <div class="p-5 sm:p-8 space-y-8">
+
+                    <!-- BÖLÜM 1: Öğrenci ve Veli Bilgileri -->
+                    <div class="space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2 border-b border-slate-200">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-meb-navy text-white text-xs font-bold flex items-center justify-center">1</span>
+                                <h4 class="text-sm sm:text-base font-bold text-meb-navy">Öğrenci ve Veli Kimlik Bilgileri</h4>
+                            </div>
+                            <span id="teacher-info-badge" class="hidden text-xs font-medium text-meb-navy bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-lg"></span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5">
+                            <!-- Sınıf Seçimi -->
+                            <div class="md:col-span-3">
+                                <label for="studentGrade" class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
+                                    1. Sınıf Düzeyi <span class="text-meb-red">*</span>
+                                </label>
+                                <select id="studentGrade" name="studentGrade" required onchange="onGradeChange()"
+                                    class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-meb-navy/20 focus:border-meb-navy transition-all font-medium">
+                                    <option value="">Sınıf Seçiniz</option>
+                                    <option value="5">5. Sınıf</option>
+                                    <option value="6">6. Sınıf</option>
+                                    <option value="7">7. Sınıf</option>
+                                    <option value="8">8. Sınıf</option>
+                                </select>
+                                <p id="err-studentGrade" class="hidden text-xs text-meb-red mt-1 font-medium"></p>
+                            </div>
+
+                            <!-- Şube Seçimi (Sınıfa göre dinamik dolar, örn. 7. sınıfta D yoktur) -->
+                            <div class="md:col-span-3">
+                                <label for="studentSection" class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
+                                    2. Şubesi <span class="text-meb-red">*</span>
+                                </label>
+                                <select id="studentSection" name="studentSection" required disabled onchange="onSectionChange()"
+                                    class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-meb-navy/20 focus:border-meb-navy transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <option value="">Önce Sınıf Seçiniz</option>
+                                </select>
+                                <p id="err-studentSection" class="hidden text-xs text-meb-red mt-1 font-medium"></p>
+                            </div>
+
+                            <!-- Öğrenci Seçimi (Şubeye göre dinamik dolar + hızlı filtreleme) -->
+                            <div class="md:col-span-6">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label for="studentSelect" class="block text-xs sm:text-sm font-semibold text-slate-700">
+                                        3. Öğrenci Adı Soyadı <span class="text-meb-red">*</span>
+                                    </label>
+                                    <span id="roster-count-hint" class="text-[11px] text-slate-500"></span>
+                                </div>
+
+                                <!-- Hızlı Öğrenci Arama Kutusu (Şube seçildiğinde görünür) -->
+                                <div id="student-filter-wrapper" class="hidden mb-2 relative">
+                                    <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <input type="text" id="studentQuickSearch" oninput="filterStudentDropdown()" placeholder="Şube listesinde isim veya okul no ile hızlı ara..."
+                                        class="w-full pl-8 pr-3 py-1.5 text-xs bg-blue-50/40 border border-blue-200 rounded-lg focus:bg-white focus:outline-none focus:border-meb-navy transition-all">
+                                </div>
+
+                                <select id="studentSelect" name="studentSelect" required disabled onchange="onStudentSelectChange()"
+                                    class="w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-meb-navy/20 focus:border-meb-navy transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <option value="">Önce Sınıf ve Şube Seçiniz</option>
+                                </select>
+
+                                <!-- Listede Yok / Manuel Giriş Alanı -->
+                                <div id="manual-student-box" class="hidden mt-2.5 relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                                    </div>
+                                    <input type="text" id="manualStudentName" placeholder="Yeni nakil öğrencinin Adı Soyadı..."
+                                        class="w-full pl-9 pr-3 py-2 text-sm bg-amber-50/50 border border-amber-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-meb-navy/20 focus:border-meb-navy transition-all">
+                                </div>
+                                <p id="err-studentName" class="hidden text-xs text-meb-red mt-1 font-medium"></p>
+                            </div>
+
+                            <!-- Okul Numarası (Otomatik Dolar ve Kilitlenir) -->
+                            <div class="md:col-span-4">
+                                <label for="studentNumber" class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
+                                    Okul Numarası <span class="text-meb-red">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="hash" class="w-4 h-4"></i>
+                                    </div>
+                                    <input type="number" id="studentNumber" name="studentNumber" required readonly min="1" placeholder="Otomatik dolar"
+                                        class="w-full pl-9 pr-9 py-2.5 text-sm bg-slate-100 border border-slate-300 rounded-xl text-slate-800 font-bold read-only:cursor-not-allowed focus:bg-white focus:outline-none focus:ring-2 focus:ring-meb-navy/20 focus:border-meb-navy transition-all">
+                                    <div id="number-lock-icon" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                </div>
+                                <p id="err-studentNumber" class="hidden text-xs text-meb-red mt-1 font-medium"></p>
+                            </div>
+
+                            <!-- Veli Adı Soyadı -->
+                            <div class="md:col-span-4">
+                                <label for="parentName" class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
+                                    Veli Adı Soyadı <span class="text-meb-red">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="users" class="w-4 h-4"></i>
+                                    </div>
+                                    <input type="text" id="parentName" name="parentName" required placeholder="Örn: Mehmet Yılmaz"
+                                        class="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-meb-navy/20 focus:border-meb-navy transition-all">
+                                </div>
+                                <p id="err-parentName" class="hidden text-xs text-meb-red mt-1 font-medium"></p>
+                            </div>
+
+                            <!-- Veli İletişim Telefonu -->
+                            <div class="md:col-span-4">
+                                <label for="parentPhone" class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
+                                    Veli İletişim Telefonu <span class="text-meb-red">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                        <i data-lucide="phone" class="w-4 h-4"></i>
+                                    </div>
+                                    <input type="tel" id="parentPhone" name="parentPhone" required placeholder="05XX XXX XX XX"
+                                        class="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-meb-navy/20 focus:border-meb-navy transition-all">
+                                </div>
+                                <p id="err-parentPhone" class="hidden text-xs text-meb-red mt-1 font-medium"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÖLÜM 2: Katılınamayan Sınav / Ders Seçimi -->
+                    <div class="space-y-5">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2 border-b border-slate-200">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-meb-navy text-white text-xs font-bold flex items-center justify-center">2</span>
+                                <h4 class="text-sm sm:text-base font-bold text-meb-navy">Katılınamayan Sınav ve Ders Seçimi <span class="text-meb-red">*</span></h4>
+                            </div>
+                            <span id="course-grade-hint" class="text-xs text-slate-500">03 - 13 Kasım 2026 tarihleri arasında girilemeyen dersleri ayrı ayrı seçiniz</span>
+                        </div>
+
+                        <!-- 2A. Zorunlu Dersler Kategorisi -->
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <h5 class="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-meb-navy"></span>
+                                    <span>Zorunlu Dersler</span>
+                                </h5>
+                                <span class="text-[11px] text-slate-400">Her ders için sınav tarihini kontrol ediniz</span>
+                            </div>
+                            <div id="mandatory-courses-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <!-- Zorunlu dersler JS ile dinamik olarak oluşturulacaktır -->
+                            </div>
+                        </div>
+
+                        <!-- 2B. Seçmeli Dersler Kategorisi -->
+                        <div class="space-y-2.5 pt-2">
+                            <div class="flex items-center justify-between">
+                                <h5 class="text-xs sm:text-sm font-bold text-meb-darkred flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-meb-red"></span>
+                                    <span>Seçmeli Dersler</span>
+                                </h5>
+                                <span class="text-[11px] text-slate-400">Öğrencinin sorumlu olduğu seçmeli dersleri ayrı ayrı işaretleyiniz</span>
+                            </div>
+                            <div id="elective-courses-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <!-- Seçmeli dersler JS ile dinamik olarak oluşturulacaktır -->
+                            </div>
+                        </div>
+
+                        <p id="err-courses" class="hidden text-xs text-meb-red font-medium"></p>
+                    </div>
+
+                    <!-- BÖLÜM 3: Mazeret Türü ve Gerekçesi -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 pb-2 border-b border-slate-200">
+                            <span class="w-6 h-6 rounded-full bg-meb-navy text-white text-xs font-bold flex items-center justify-center">3</span>
+                            <h4 class="text-sm sm:text-base font-bold text-meb-navy">Mazeret Türü ve Açıklaması <span class="text-meb-red">*</span></h4>
+                        </div>
+
+                        <!-- Mazeret Türü Radyo Kartları -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 border-slate-200 bg-slate-50/60 cursor-pointer hover:border-meb-navy/40 transition-all has-[:checked]:border-meb-navy has-[:checked]:bg-blue-50/40">
+                                <input type="radio" name="excuseType" value="Sağlık Raporu" class="mt-1 h-4 w-4 text-meb-navy focus:ring-meb-navy border-slate-300" checked>
+                                <div>
+                                    <span class="block text-sm font-bold text-slate-800">Sağlık Raporu</span>
+                                    <span class="block text-xs text-slate-500 mt-0.5">Hastane / Aile Hekimi raporu</span>
+                                </div>
+                            </label>
+
+                            <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 border-slate-200 bg-slate-50/60 cursor-pointer hover:border-meb-navy/40 transition-all has-[:checked]:border-meb-navy has-[:checked]:bg-blue-50/40">
+                                <input type="radio" name="excuseType" value="İzin Belgesi" class="mt-1 h-4 w-4 text-meb-navy focus:ring-meb-navy border-slate-300">
+                                <div>
+                                    <span class="block text-sm font-bold text-slate-800">İzin Belgesi</span>
+                                    <span class="block text-xs text-slate-500 mt-0.5">Okul idaresi / kurum onaylı izin</span>
+                                </div>
+                            </label>
+
+                            <label class="relative flex items-start gap-3 p-3.5 rounded-xl border-2 border-slate-200 bg-slate-50/60 cursor-pointer hover:border-meb-navy/40 transition-all has-[:checked]:border-meb-navy has-[:checked]:bg-blue-50/40">
+                                <input type="radio" name="excuseType" value="Diğer Geçerli Mazeret" class="mt-1 h-4 w-4 text-meb-navy focus:ring-meb-navy border-slate-300">
+                                <div>
+                                    <span class="block text-sm font-bold text-slate-800">Diğer Geçerli Mazeret</span>
+                                    <span class="block text-xs text-slate-500 mt-0.5">Resmî belgelendirilebilir durum</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Mazeret Gerekçesi Açıklaması -->
+                        <div>
+                            <label for="excuseReason" class="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
+                                Mazeret Gerekçesi Detaylı Açıklaması <span class="text-meb-red">*</span>
+                            </label>
+                            <textarea id="excuseReason" name="excuseReason" rows="3" required
+                                placeholder="Öğrencinin sınava katılamama nedenini, rapor/izin tarih aralığını ve belge bilgilerini kısaca açıklayınız..."
+                                class="w-full p-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-meb-navy/20 focus:border-meb-navy transition-all"></textarea>
+                            <p id="err-excuseReason" class="hidden text-xs text-meb-red mt-1 font-medium"></p>
+                        </div>
+                    </div>
+
+                    <!-- BÖLÜM 4: Mazeret Belgesi / Rapor Yükleme -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 pb-2 border-b border-slate-200">
+                            <span class="w-6 h-6 rounded-full bg-meb-navy text-white text-xs font-bold flex items-center justify-center">4</span>
+                            <h4 class="text-sm sm:text-base font-bold text-meb-navy">Mazeret Belgesi / Rapor Yükleme <span class="text-meb-red">*</span></h4>
+                        </div>
+
+                        <!-- Sürükle Bırak Alanı -->
+                        <div id="drop-zone" class="relative border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center bg-slate-50/70 hover:bg-blue-50/30 hover:border-meb-navy transition-all cursor-pointer">
+                            <input type="file" id="excuseFile" name="excuseFile" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" class="hidden">
+                            
+                            <!-- Dosya Seçilmediğinde Görünecek İçerik -->
+                            <div id="upload-placeholder" class="space-y-2">
+                                <div class="w-12 h-12 rounded-2xl bg-meb-navy/10 text-meb-navy mx-auto flex items-center justify-center">
+                                    <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+                                </div>
+                                <div class="text-sm font-semibold text-slate-700">
+                                    Belgeyi buraya sürükleyip bırakın veya <span class="text-meb-blue underline">dosya seçin</span>
+                                </div>
+                                <p class="text-xs text-slate-500">
+                                    Desteklenen formatlar: <strong>PDF, JPG, PNG</strong> (Maksimum dosya boyutu: 10 MB)
+                                </p>
+                            </div>
+
+                            <!-- Dosya Seçildiğinde Görünecek Önizleme Kartı -->
+                            <div id="file-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-left">
+                                <div class="flex items-center gap-3.5 overflow-hidden w-full">
+                                    <div id="file-thumb-container" class="w-14 h-14 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
+                                        <i data-lucide="file-text" class="w-7 h-7 text-meb-navy"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p id="file-name-display" class="text-sm font-bold text-slate-800 truncate">rapor_belgesi.pdf</p>
+                                        <p id="file-meta-display" class="text-xs text-slate-500 mt-0.5">PDF • 1.2 MB</p>
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md mt-1">
+                                            <i data-lucide="check-circle-2" class="w-3 h-3"></i> Belge yüklendi
+                                        </span>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="removeFile(event)" class="px-3 py-2 rounded-lg text-xs font-semibold text-meb-red bg-red-50 hover:bg-red-100 transition-colors flex items-center gap-1.5 shrink-0">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    <span>Kaldır</span>
+                                </button>
+                            </div>
+                        </div>
+                        <p id="err-excuseFile" class="hidden text-xs text-meb-red font-medium"></p>
+                    </div>
+
+                    <!-- BÖLÜM 5: Veli Beyan ve Onay -->
+                    <div class="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 space-y-2">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="checkbox" id="parentDeclaration" name="parentDeclaration" required class="mt-1 h-4 w-4 rounded text-meb-navy focus:ring-meb-navy border-slate-300">
+                            <span class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+                                Yukarıda belirttiğim bilgilerin doğruluğunu beyan eder, mazeret belgemi ibraz ettiğimi onaylarım. Yanlış veya eksik beyan durumunda sorumluluğun tarafıma ait olduğunu kabul ederim. <span class="text-meb-red">*</span>
+                            </span>
+                        </label>
+                        <p id="err-parentDeclaration" class="hidden text-xs text-meb-red font-medium pl-7"></p>
+                    </div>
+
+                    <!-- Gönder Butonu -->
+                    <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
+                        <button type="button" onclick="resetForm()" class="w-full sm:w-auto px-5 py-3 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
+                            Formu Temizle
+                        </button>
+                        <button type="submit" id="submit-application-btn" class="w-full sm:w-auto px-7 py-3.5 rounded-xl text-sm font-bold text-white bg-meb-navy hover:bg-slate-800 shadow-lg shadow-meb-navy/20 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span id="submit-btn-text">Mazeret Başvurusunu Gönder</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- ==================== BAŞVURU SONRASI: RESMİ ALINDI BELGESİ KARTI ==================== -->
+            <section id="receipt-section" class="hidden space-y-5">
+                <!-- Üst Eylem Çubuğu (Yazdırma ekranında gizlenir) -->
+                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 print:hidden">
+                    <div class="flex items-center gap-3 text-center sm:text-left flex-col sm:flex-row">
+                        <div class="w-11 h-11 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                            <i data-lucide="check" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-emerald-950">Mazeret Başvurunuz Başarıyla Kaydedildi!</h3>
+                            <p class="text-xs sm:text-sm text-emerald-800 mt-0.5">
+                                Başvuru takip numaranızı not alabilir veya aşağıdaki resmi alındı belgesini PDF/yazıcı çıktısı olarak saklayabilirsiniz.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-center gap-2 shrink-0">
+                        <button type="button" onclick="window.print()" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-meb-navy text-white hover:bg-slate-800 shadow-sm flex items-center gap-2 transition-colors">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span>Yazdır / PDF Kaydet</span>
+                        </button>
+                        <button type="button" onclick="startNewApplication()" class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>Yeni Başvuru</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resmi Başvuru Alındı Belgesi (Yazdırılabilir Kart) -->
+                <div id="printable-receipt" class="bg-white rounded-2xl shadow-lg border-2 border-slate-300 p-6 sm:p-10 space-y-6 print:shadow-none print:border print:border-slate-400 print:rounded-none">
+                    <!-- Belge Anteti -->
+                    <div class="text-center border-b-2 border-slate-800 pb-4 space-y-1">
+                        <p class="text-xs font-bold tracking-widest uppercase text-slate-600">T.C.</p>
+                        <p class="text-sm font-bold uppercase text-slate-800">YALOVA VALİLİĞİ</p>
+                        <p class="text-sm font-bold uppercase text-slate-800">İl Millî Eğitim Müdürlüğü / Saffet Çam Ortaokulu Müdürlüğü</p>
+                        <h2 class="text-base sm:text-lg font-extrabold text-meb-navy pt-2 uppercase">
+                            2026-2027 EĞİTİM ÖĞRETİM YILI 1. DÖNEM 1. ORTAK YAZILI SINAVLAR<br>MAZERET SINAVI BAŞVURU ALINDI BELGESİ
+                        </h2>
+                    </div>
+
+                    <!-- Takip No ve Tarih Bandı -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-100 px-4 py-3 rounded-xl border border-slate-200 text-xs sm:text-sm">
+                        <div>
+                            <span class="text-slate-500 font-medium">Başvuru Takip No:</span>
+                            <strong id="rec-trackingId" class="font-mono text-base font-extrabold text-meb-navy ml-1">SC-2026-0000</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 font-medium">Başvuru Tarihi / Saati:</span>
+                            <strong id="rec-timestamp" class="font-semibold text-slate-800 ml-1">-</strong>
+                        </div>
+                    </div>
+
+                    <!-- Öğrenci ve Veli Tablosu -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
+                        <div class="p-3.5 rounded-xl border border-slate-200 space-y-2">
+                            <h4 class="font-bold text-meb-navy border-b border-slate-100 pb-1 uppercase text-xs">Öğrenci Bilgileri</h4>
+                            <div class="flex justify-between"><span class="text-slate-500">Adı Soyadı:</span> <strong id="rec-studentName" class="text-slate-900">-</strong></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Sınıf / Şube:</span> <strong id="rec-classSection" class="text-slate-900">-</strong></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Okul Numarası:</span> <strong id="rec-studentNumber" class="text-slate-900">-</strong></div>
+                        </div>
+
+                        <div class="p-3.5 rounded-xl border border-slate-200 space-y-2">
+                            <h4 class="font-bold text-meb-navy border-b border-slate-100 pb-1 uppercase text-xs">Veli ve Mazeret Bilgileri</h4>
+                            <div class="flex justify-between"><span class="text-slate-500">Veli Adı Soyadı:</span> <strong id="rec-parentName" class="text-slate-900">-</strong></div>
+                            <div class="flex justify-between"><span class="text-slate-500">İletişim Telefonu:</span> <strong id="rec-parentPhone" class="text-slate-900">-</strong></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Mazeret Türü:</span> <strong id="rec-excuseType" class="text-meb-darkred">-</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Katılınamayan Sınavlar Tablosu -->
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-meb-navy uppercase text-xs">Mazeret Sınavına Girilecek Dersler (23 - 27 Kasım 2026)</h4>
+                        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                            <table class="w-full text-left text-xs sm:text-sm">
+                                <thead class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-2.5 px-3.5 font-bold w-12">#</th>
+                                        <th class="py-2.5 px-3.5 font-bold">Ders Adı</th>
+                                        <th class="py-2.5 px-3.5 font-bold">Katılınamayan Sınav Tarihi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rec-courses-tbody" class="divide-y divide-slate-200">
+                                    <!-- Dinamik satırlar -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Gerekçe ve Ekli Belge -->
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs sm:text-sm">
+                        <div>
+                            <span class="font-bold text-slate-700">Mazeret Gerekçesi:</span>
+                            <p id="rec-excuseReason" class="text-slate-700 mt-1 leading-relaxed">-</p>
+                        </div>
+                        <div class="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <span class="font-bold text-slate-700">İbraz Edilen Belge:</span>
+                                <span id="rec-fileName" class="text-slate-800 font-medium ml-1">-</span>
+                            </div>
+                            <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-md">Elektronik Ortamda Yüklendi</span>
+                        </div>
+                    </div>
+
+                    <!-- İmza ve Onay Alanı -->
+                    <div class="grid grid-cols-2 gap-6 pt-4 text-xs sm:text-sm text-center">
+                        <div class="space-y-8">
+                            <p class="font-bold text-slate-700">Başvuruyu Yapan Veli</p>
+                            <div>
+                                <p id="rec-signParent" class="font-semibold text-slate-900">-</p>
+                                <p class="text-[11px] text-slate-500">İmza / Elektronik Beyan Onaylı</p>
+                            </div>
+                        </div>
+                        <div class="space-y-8">
+                            <p class="font-bold text-slate-700">Okul Müdürlüğü Onayı</p>
+                            <div>
+                                <p class="font-semibold text-slate-900">Saffet Çam Ortaokulu İdaresi</p>
+                                <p class="text-[11px] text-slate-500">Teslim Alan / Tarih / Mühür</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== SEKME 2: OKUL İDARESİ KAYIT VE DIŞA AKTARIM PANELİ ==================== -->
+        <div id="view-admin" class="hidden space-y-6 print:hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-meb-navy px-6 py-4 text-white flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                                <i data-lucide="shield-check" class="w-5 h-5 text-amber-400"></i>
+                                <span>Okul İdaresi / Başvuru Takip Paneli</span>
+                            </h2>
+                            <span id="cloud-sync-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span>Canlı Eşitleme Bağlanıyor...</span>
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-1">Tüm cihazlardan gönderilen veli başvurularını gerçek zamanlı takip edebilir, belgeleri indirip onay durumlarını güncelleyebilirsiniz.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                        <button type="button" onclick="printAdminSummary()" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/20 flex items-center gap-1.5 transition-colors">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span>Sınav Listesi Yazdır</span>
+                        </button>
+                        <button type="button" onclick="exportToCSV()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm flex items-center gap-2 transition-colors">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                            <span>Excel (CSV) İndir</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Özet İstatistik Kartları -->
+                <div class="grid grid-cols-2 sm:grid-cols-6 gap-2.5 p-4 bg-slate-100/70 border-b border-slate-200 text-center">
+                    <div class="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                        <span class="block text-[11px] font-semibold text-slate-500">Toplam Başvuru</span>
+                        <strong id="stat-total" class="text-lg font-extrabold text-meb-navy">0</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                        <span class="block text-[11px] font-semibold text-slate-500">5. Sınıflar</span>
+                        <strong id="stat-g5" class="text-lg font-extrabold text-slate-800">0</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                        <span class="block text-[11px] font-semibold text-slate-500">6. Sınıflar</span>
+                        <strong id="stat-g6" class="text-lg font-extrabold text-slate-800">0</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                        <span class="block text-[11px] font-semibold text-slate-500">7. Sınıflar</span>
+                        <strong id="stat-g7" class="text-lg font-extrabold text-slate-800">0</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                        <span class="block text-[11px] font-semibold text-slate-500">8. Sınıflar</span>
+                        <strong id="stat-g8" class="text-lg font-extrabold text-slate-800">0</strong>
+                    </div>
+                    <div class="bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
+                        <span class="block text-[11px] font-semibold text-emerald-700">Onaylanan</span>
+                        <strong id="stat-approved" class="text-lg font-extrabold text-emerald-700">0</strong>
+                    </div>
+                </div>
+
+                <!-- Arama ve Filtre Çubuğu -->
+                <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                        </div>
+                        <input type="text" id="admin-search" oninput="renderAdminTable()" placeholder="Öğrenci adı, okul no, veli adı veya takip no ara..."
+                            class="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-meb-navy">
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                        <select id="admin-grade-filter" onchange="renderAdminTable()" class="w-full sm:w-auto px-3 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-meb-navy">
+                            <option value="">Tüm Sınıflar</option>
+                            <option value="5">5. Sınıflar</option>
+                            <option value="6">6. Sınıflar</option>
+                            <option value="7">7. Sınıflar</option>
+                            <option value="8">8. Sınıflar</option>
+                        </select>
+                        <select id="admin-section-filter" onchange="renderAdminTable()" class="w-full sm:w-auto px-3 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-meb-navy">
+                            <option value="">Tüm Şubeler</option>
+                            <option value="A">A Şubesi</option>
+                            <option value="B">B Şubesi</option>
+                            <option value="C">C Şubesi</option>
+                            <option value="D">D Şubesi</option>
+                            <option value="E">E Şubesi</option>
+                            <option value="F">F Şubesi</option>
+                        </select>
+                        <select id="admin-status-filter" onchange="renderAdminTable()" class="w-full sm:w-auto px-3 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-meb-navy">
+                            <option value="">Tüm Durumlar</option>
+                            <option value="Beklemede">Beklemede</option>
+                            <option value="Onaylandı">Onaylandı</option>
+                            <option value="Eksik Belge">Eksik Belge</option>
+                        </select>
+                        <select id="admin-course-filter" onchange="renderAdminTable()" class="w-full sm:w-auto px-3 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:border-meb-navy">
+                            <option value="">Tüm Dersler</option>
+                            <optgroup label="Zorunlu Dersler">
+                                <option value="turkce">Türkçe</option>
+                                <option value="matematik">Matematik</option>
+                                <option value="fen">Fen Bilimleri</option>
+                                <option value="sosyal">Sosyal Bilgiler</option>
+                                <option value="inkilap">T.C. İnkılap Tarihi ve Atatürkçülük</option>
+                                <option value="ingilizce">Yabancı Dil (İngilizce)</option>
+                                <option value="almanca">Almanca</option>
+                                <option value="din">Din Kültürü ve Ahlak Bilgisi</option>
+                                <option value="gorsel">Görsel Sanatlar</option>
+                                <option value="muzik">Müzik</option>
+                                <option value="teknoloji">Teknoloji ve Tasarım</option>
+                                <option value="beden">Beden Eğitimi / Seçmeli Spor / Fiziki Etkinlik / Oyun Eğitimi</option>
+                            </optgroup>
+                            <optgroup label="Seçmeli Dersler">
+                                <option value="sec_cevre">Seçmeli Çevre Eğitimi ve İklim Değişikliği</option>
+                                <option value="sec_kultur1">Seçmeli Kültür ve Medeniyetimize Yön Verenler-1</option>
+                                <option value="sec_kultur2">Seçmeli Kültür ve Medeniyetimize Yön Verenler-2</option>
+                                <option value="sec_mat_bilim">Seçmeli Matematik ve Bilim Uygulamaları</option>
+                                <option value="sec_kuran">Seçmeli Kur'an-ı Kerim</option>
+                                <option value="sec_peygamber">Seçmeli Peygamberimizin Hayatı</option>
+                                <option value="sec_ahlak">Seçmeli Ahlak ve Yurttaşlık Eğitimi</option>
+                                <option value="sec_yapay_zeka">Seçmeli Yapay Zeka</option>
+                                <option value="sec_robotik">Seçmeli Robotik Kodlama</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Kayıt Tablosu -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-4 font-bold">Takip No</th>
+                                <th class="py-3 px-4 font-bold">Öğrenci / Sınıf</th>
+                                <th class="py-3 px-4 font-bold">Veli / Telefon</th>
+                                <th class="py-3 px-4 font-bold">Dersler</th>
+                                <th class="py-3 px-4 font-bold">Mazeret / Belge</th>
+                                <th class="py-3 px-4 font-bold">Onay Durumu</th>
+                                <th class="py-3 px-4 font-bold text-right">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-tbody" class="divide-y divide-slate-200">
+                            <!-- Dinamik satırlar -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Boş Durum Göstergesi -->
+                <div id="admin-empty-state" class="p-10 text-center space-y-2">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
+                        <i data-lucide="inbox" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-sm font-bold text-slate-700">Henüz kayıtlı başvuru bulunmuyor</p>
+                    <p class="text-xs text-slate-500">Başvuru formundan yeni bir kayıt oluşturulduğunda gerçek zamanlı olarak burada listelenecektir.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Yazdırılabilir Toplu Mazeret Sınav Listesi (Sadece Yazdırma Ekranında Görünür) -->
+    <section id="printable-admin-list" class="hidden print:block p-6 bg-white text-slate-900 space-y-4">
+        <div class="text-center border-b-2 border-slate-800 pb-3">
+            <p class="text-xs font-bold uppercase">T.C. YALOVA VALİLİĞİ • Merkez / Saffet Çam Ortaokulu Müdürlüğü</p>
+            <h2 class="text-base font-extrabold uppercase mt-1">2026-2027 1. DÖNEM 1. ORTAK YAZILI SINAVLAR MAZERET BAŞVURU LİSTESİ</h2>
+            <p id="print-admin-meta" class="text-xs text-slate-600 mt-0.5"></p>
+        </div>
+        <table class="w-full text-left text-xs border-collapse border border-slate-400">
+            <thead>
+                <tr class="bg-slate-100">
+                    <th class="border border-slate-400 p-1.5">S.No</th>
+                    <th class="border border-slate-400 p-1.5">Takip No</th>
+                    <th class="border border-slate-400 p-1.5">Sınıf/Şube</th>
+                    <th class="border border-slate-400 p-1.5">Okul No</th>
+                    <th class="border border-slate-400 p-1.5">Öğrenci Adı Soyadı</th>
+                    <th class="border border-slate-400 p-1.5">Mazeret Türü</th>
+                    <th class="border border-slate-400 p-1.5">Sınava Gireceği Dersler</th>
+                    <th class="border border-slate-400 p-1.5">Durum</th>
+                </tr>
+            </thead>
+            <tbody id="print-admin-tbody"></tbody>
+        </table>
+    </section>
+
+    <!-- Yüklenen Mazeret Belgesi Görüntüleme Modalı (İdare Paneli İçin) -->
+    <div id="doc-viewer-modal" class="hidden fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-4 print:hidden">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200">
+            <div class="bg-meb-navy text-white px-5 py-3.5 flex items-center justify-between">
+                <div class="flex items-center gap-2 min-w-0">
+                    <i data-lucide="file-check-2" class="w-5 h-5 text-amber-400 shrink-0"></i>
+                    <h3 id="modal-doc-title" class="text-sm sm:text-base font-bold truncate">Mazeret Belgesi Önizleme</h3>
+                </div>
+                <button type="button" onclick="closeDocModal()" class="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="modal-doc-body" class="p-4 overflow-auto flex-1 bg-slate-100 flex items-center justify-center min-h-[320px]">
+                <!-- Belge önizlemesi buraya yerleşir -->
+            </div>
+            <div class="px-5 py-3 bg-white border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+                <span id="modal-doc-subtitle">Yalova Merkez Saffet Çam Ortaokulu</span>
+                <div class="flex items-center gap-2">
+                    <a id="modal-doc-download" href="#" download="mazeret_belgesi" class="hidden px-3.5 py-2 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-500 transition-colors inline-flex items-center gap-1.5">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Belgeyi İndir</span>
+                    </a>
+                    <button type="button" onclick="closeDocModal()" class="px-4 py-2 rounded-xl bg-meb-navy text-white font-semibold hover:bg-slate-800 transition-colors">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kayıt Silme Onay Modalı (confirm() yerine özel modal) -->
+    <div id="delete-confirm-modal" class="hidden fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-xs flex items-center justify-center p-4 print:hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-xl bg-red-100 text-meb-red flex items-center justify-center shrink-0">
+                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Başvuru Kaydını Sil</h3>
+                    <p id="delete-confirm-text" class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                        Bu başvuru kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button type="button" onclick="closeDeleteModal()" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors">
+                    Vazgeç
+                </button>
+                <button type="button" id="confirm-delete-btn" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-meb-red text-white hover:bg-meb-darkred transition-colors">
+                    Evet, Kaydı Sil
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alt Bilgi (Footer) -->
+    <footer class="bg-white border-t border-slate-200 mt-10 py-5 text-center text-xs text-slate-500 print:hidden">
+        <div class="max-w-5xl mx-auto px-4 space-y-1">
+            <p class="font-semibold text-slate-700">Yalova Merkez Saffet Çam Ortaokulu Müdürlüğü</p>
+            <p>2026-2027 Eğitim Öğretim Yılı Ölçme ve Değerlendirme Komisyonu • Mazeret Sınavları: 23 - 27 Kasım 2026</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK & Merkezi Bulut Veritabanı Entegrasyonu -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // =========================================================================
+        // GITHUB PAGES / HARİCİ SUNUCU FIREBASE YAPILANDIRMASI
+        // Kendi Firebase Console (Project Settings -> General -> Your apps) bilgilerinizi
+        // aşağıdaki tırnak işaretlerinin içine yapıştırınız:
+        // =========================================================================
+        const GITHUB_FIREBASE_CONFIG = {
+            apiKey: "BURAYA_API_KEY_YAPISTIRIN",
+            authDomain: "BURAYA_PROJECT_ID.firebaseapp.com",
+            projectId: "BURAYA_PROJECT_ID",
+            storageBucket: "BURAYA_PROJECT_ID.firebasestorage.app",
+            messagingSenderId: "BURAYA_SENDER_ID",
+            appId: "BURAYA_APP_ID"
+        };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'saffet-cam-mazeret-2026';
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+
+        async function initCloudStorage() {
+            const syncBadge = document.getElementById('cloud-sync-badge');
+            try {
+                let firebaseConfig = null;
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    firebaseConfig = JSON.parse(__firebase_config);
+                } else if (GITHUB_FIREBASE_CONFIG.apiKey && !GITHUB_FIREBASE_CONFIG.apiKey.startsWith('BURAYA_')) {
+                    firebaseConfig = GITHUB_FIREBASE_CONFIG;
+                } else {
+                    throw new Error('GitHub Pages için Firebase yapılandırma anahtarları henüz girilmemiş.');
+                }
+
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Önce kimlik doğrulamayı tamamla
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = cred.user;
+                } else {
+                    const cred = await signInAnonymously(auth);
+                    currentUser = cred.user;
+                }
+
+                // Kamu/Okul İdaresi Koleksiyon Yolu
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'mazeret_basvurulari');
+
+                // Gerçek zamanlı dinleyici
+                onSnapshot(colRef, (snapshot) => {
+                    const list = [];
+                    snapshot.forEach((docSnap) => {
+                        list.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    // En yeni başvurular üstte olacak şekilde bellekte sırala
+                    list.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+                    window.submissions = list;
+                    if (typeof window.updateBadge === 'function') window.updateBadge();
+                    if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
+
+                    if (syncBadge) {
+                        syncBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Merkezi Veritabanı Aktif (Canlı)</span>`;
+                    }
+                }, (error) => {
+                    console.error('Veritabanı dinleme hatası:', error);
+                    if (syncBadge) {
+                        syncBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/30';
+                        syncBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span><span>Bağlantı Uyarısı</span>`;
+                    }
+                });
+
+                // Küresel kaydetme / güncelleme / silme köprüleri
+                window.cloudSaveSubmission = async (submissionObj) => {
+                    if (!currentUser || !db) return false;
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mazeret_basvurulari', submissionObj.trackingId);
+                    await setDoc(docRef, submissionObj);
+                    return true;
+                };
+
+                window.cloudUpdateStatus = async (trackingId, newStatus) => {
+                    if (!currentUser || !db) return false;
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mazeret_basvurulari', trackingId);
+                    await updateDoc(docRef, { status: newStatus });
+                    return true;
+                };
+
+                window.cloudDeleteSubmission = async (trackingId) => {
+                    if (!currentUser || !db) return false;
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mazeret_basvurulari', trackingId);
+                    await deleteDoc(docRef);
+                    return true;
+                };
+
+            } catch (err) {
+                console.warn('Bulut başlatılamadı, oturum içi bellek modu etkin:', err);
+                if (syncBadge) {
+                    syncBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/30';
+                    syncBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span><span>Firebase Ayarı Bekleniyor</span>`;
+                }
+            }
+        }
+
+        initCloudStorage();
+    </script>
+
+    <!-- JavaScript Uygulama Mantığı -->
+    <script>
+        // =========================================================================
+        // 09.11.2026 SINIF LİSTELERİ PDF VERİ TABANI (23 Şube - Toplam 681 Öğrenci)
+        // Not: 7. Sınıflarda 7-A, 7-B, 7-C, 7-E, 7-F mevcuttur (7-D şubesi yoktur).
+        // =========================================================================
+        const SCHOOL_ROSTER = {
+            "5": {
+                "A": {
+                    label: "A Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "MEHTAP BÜYÜK",
+                    students: [
+                        { no: 2, name: "ABDULLAH AVCI" },
+                        { no: 4, name: "AHMED ADAM HUSSEIN MASTOUR" },
+                        { no: 15, name: "ALİ EYMEN GÜNER" },
+                        { no: 59, name: "ECEM SU YANAR" },
+                        { no: 64, name: "EGE UĞUR" },
+                        { no: 87, name: "ERTUĞRUL DELİCE" },
+                        { no: 90, name: "ESLEM KAYMAK" },
+                        { no: 113, name: "GHAITH ADAM HUSSEIN MASTOUR" },
+                        { no: 118, name: "GÖKÇE TANRIKUL" },
+                        { no: 168, name: "KEREM ALİ ŞİŞMAN" },
+                        { no: 178, name: "MUSTAFA KEMAL YİMSEK" },
+                        { no: 212, name: "MISHEL FAYZULINA" },
+                        { no: 219, name: "BELİS YILMAZ" },
+                        { no: 233, name: "NEHİR EZER" },
+                        { no: 250, name: "REVAN ECRİN ÖZİŞİ" },
+                        { no: 286, name: "METİN OĞUZ ÜNAL" },
+                        { no: 332, name: "URAS ÖZ" },
+                        { no: 336, name: "DEFNE AKPINAR" },
+                        { no: 347, name: "YAĞIZ YAPICI" },
+                        { no: 348, name: "YAMAN YAKICI" },
+                        { no: 364, name: "YUSUF EYMEN ERİK" },
+                        { no: 367, name: "LİNA KILIÇ" },
+                        { no: 375, name: "MOHAMMAD MATIN MURADI" },
+                        { no: 379, name: "ELİFSU APAYDIN" },
+                        { no: 385, name: "ARİN ÖZKAYA" },
+                        { no: 387, name: "MUHAMMED SIDIK YILDIRIM" },
+                        { no: 398, name: "MAEDEH MAHMOODI" },
+                        { no: 687, name: "ASMİN EREN" }
+                    ]
+                },
+                "B": {
+                    label: "B Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "BÜNYAMİN YILDIRIM",
+                    students: [
+                        { no: 11, name: "ABDULKADİR DEMİR" },
+                        { no: 51, name: "ÇINAR SEKİN" },
+                        { no: 62, name: "EFE BERK ÖKELİ" },
+                        { no: 75, name: "EMİR AKSOY" },
+                        { no: 100, name: "EYMEN KAYA" },
+                        { no: 137, name: "HÜSEYİN ERDEM ALTUNBAY" },
+                        { no: 155, name: "JUNAID AHMED ZIYAD KAREEM" },
+                        { no: 160, name: "KADİR ALTUNBOĞA" },
+                        { no: 181, name: "LİYA KUMSAL MAVİŞ" },
+                        { no: 188, name: "KEREM TUĞALP KOÇ" },
+                        { no: 189, name: "AHMADJON ODINAEV" },
+                        { no: 201, name: "ELİF GÜLFEM ŞENGÖR" },
+                        { no: 226, name: "EFEHAN GÖKDEMİR" },
+                        { no: 229, name: "BAYRAM EFE KISA" },
+                        { no: 239, name: "NİSANUR BAYRAK" },
+                        { no: 254, name: "OSMAN ALALİ" },
+                        { no: 277, name: "RÜMEYSA KADER NALBANT" },
+                        { no: 296, name: "SELENA EREN" },
+                        { no: 307, name: "SHEHRBANU FAKHIRI" },
+                        { no: 337, name: "ÜLKÜM ASLI İLERİ" },
+                        { no: 374, name: "ZİLAN YILMAZ" },
+                        { no: 376, name: "MELİS YILMAZ" },
+                        { no: 381, name: "DEMİRKAN ARAS GÖKDEMİR" },
+                        { no: 384, name: "ECRİN HİRA ÇAPALI" },
+                        { no: 391, name: "YİĞİT KEREM GÜNGÖR" },
+                        { no: 392, name: "YUSUF SERT" },
+                        { no: 953, name: "AYTAÇ CAN ÇETİNTAŞ" }
+                    ]
+                },
+                "C": {
+                    label: "C Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "ÖZLEM İŞCAN",
+                    students: [
+                        { no: 13, name: "ALEYNA TANRIVERDİ" },
+                        { no: 14, name: "ALİ EYMEN GÖKDEMİR" },
+                        { no: 17, name: "AYAZ ALİ FIRTINA" },
+                        { no: 28, name: "BAŞAK ATALAY" },
+                        { no: 38, name: "BUĞLEM ERSOY" },
+                        { no: 54, name: "DAMLA NUR GÖÇER" },
+                        { no: 58, name: "DURU YILDIRIM" },
+                        { no: 99, name: "EYMEN EFE PAKIR" },
+                        { no: 108, name: "GÖKTÜRK GÖKÇE TANRIVERDİ" },
+                        { no: 110, name: "GÜNEŞ KOÇGÜNDÜZ" },
+                        { no: 119, name: "HAMID SAFI" },
+                        { no: 125, name: "YUSUF EGE ERDOĞAN" },
+                        { no: 131, name: "HAYATİ AHMET ZEYTİN" },
+                        { no: 141, name: "ÖMER SEVEN" },
+                        { no: 156, name: "KAAN ERGUVAN" },
+                        { no: 176, name: "İPEK BERBEROĞLU" },
+                        { no: 184, name: "LYAN SEDEEQ SAFWAN ZAINULABDEEN" },
+                        { no: 210, name: "MERYEM ERDEM" },
+                        { no: 216, name: "MOHAMMAD HAKIMI" },
+                        { no: 252, name: "ÖMER ERDEM BAŞKURT" },
+                        { no: 295, name: "MAADH MOHAMMED SHAKIR SHAKIR" },
+                        { no: 353, name: "YAREN YELBOĞA" },
+                        { no: 354, name: "YİĞİT TALHA AKAY" },
+                        { no: 370, name: "ZEYNEP KUYUCU" },
+                        { no: 373, name: "METE ÇETİN" },
+                        { no: 388, name: "POLINA IVANOVA" },
+                        { no: 397, name: "EROL KAYRA KARACA" }
+                    ]
+                },
+                "D": {
+                    label: "D Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "YAHYA ÇELİK",
+                    students: [
+                        { no: 16, name: "AYAH TAHSEEN MAHMOOD ALALI" },
+                        { no: 21, name: "ASAF AYDIN" },
+                        { no: 78, name: "EMİR MUZAFFER ADIGÜZEL" },
+                        { no: 88, name: "ŞEYMA KARAMAN" },
+                        { no: 95, name: "EVREN DEHA ARSLANTÜRK" },
+                        { no: 98, name: "EYLÜL BAL" },
+                        { no: 126, name: "HAMZAH NABEEL ABDULAZEEZ AL-SUHAIL" },
+                        { no: 161, name: "KAĞAN AYBARS BİKET" },
+                        { no: 163, name: "KALED TAHA YASEEN ALAZOOZ" },
+                        { no: 169, name: "KEREM MERİÇ" },
+                        { no: 200, name: "MEHMET ŞAH CİHAN YILDIZ" },
+                        { no: 218, name: "MUHAMMED ARDA KARAMAN" },
+                        { no: 238, name: "NİSA ALTIN" },
+                        { no: 257, name: "ÖMER FARUK YEŞİLDAĞ" },
+                        { no: 260, name: "ÖZGÜ ERARSLAN" },
+                        { no: 261, name: "PARIMA SALEHI" },
+                        { no: 270, name: "REYYAN SEHER KARAHAN" },
+                        { no: 304, name: "SEVDE GÜLŞİN" },
+                        { no: 310, name: "TUANA NESİL" },
+                        { no: 321, name: "AZRA MİRA SUNGUR" },
+                        { no: 322, name: "UMUT ERARSLAN" },
+                        { no: 325, name: "ÇINAR ONAN" },
+                        { no: 340, name: "VEYSEL ÖZER" },
+                        { no: 349, name: "ELİF ECE ERGÜN" },
+                        { no: 360, name: "YOUSEF ABDULKADR HINDI" },
+                        { no: 362, name: "YUSUF ALİ TEKİN" },
+                        { no: 699, name: "FATIMAH SADDAM KHUDHAIR ALMAYYAHI" },
+                        { no: 20181209, name: "RUQAYAH NABEEL ABDULAZEEZ AL-SUHAIL" }
+                    ]
+                },
+                "E": {
+                    label: "E Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "ELİF ÖZTÜRK",
+                    students: [
+                        { no: 8, name: "AHMET TUMGAN" },
+                        { no: 20, name: "ALİ HÜSEYİN KAZ" },
+                        { no: 29, name: "BATU BİÇER" },
+                        { no: 35, name: "BEYZANUR BOZKURT" },
+                        { no: 45, name: "MİRAÇ SALİH TAŞDEMİR" },
+                        { no: 55, name: "ELİF ŞURA ŞENER" },
+                        { no: 56, name: "DOĞA MÜJDE" },
+                        { no: 84, name: "BURÇİN KARABULUT" },
+                        { no: 132, name: "HÜMA APAK" },
+                        { no: 134, name: "YUSUF İSLAM DAĞDEVİREN" },
+                        { no: 145, name: "FATİH SELİM ALTAY" },
+                        { no: 153, name: "İSMAİL TUMGAN" },
+                        { no: 164, name: "KARTAL DENİZ KİMYAGER" },
+                        { no: 191, name: "MASAL BİTER" },
+                        { no: 198, name: "GÖKSU BEYZA DEMİR" },
+                        { no: 215, name: "MİRAY GÜNLÜLER" },
+                        { no: 231, name: "NAYAB WAJID" },
+                        { no: 246, name: "OĞUZ KAĞAN MENGÜTAY" },
+                        { no: 253, name: "OSAMA İDRIS" },
+                        { no: 293, name: "BORACAN ATEŞ" },
+                        { no: 303, name: "CİVAN AMED ÖZBEK" },
+                        { no: 309, name: "ŞEVVAL DEMİRKAN" },
+                        { no: 341, name: "WAEL ALMUAZEN" },
+                        { no: 356, name: "YOLANDE ALSANOOSI" },
+                        { no: 361, name: "YUNUS EMRE KAYA" },
+                        { no: 363, name: "YUSUF EMİR DEREÇİÇEK" },
+                        { no: 365, name: "YUSUF KULAKLIKAYA" },
+                        { no: 371, name: "ZEYNEP YAŞA" }
+                    ]
+                },
+                "F": {
+                    label: "F Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "ERCAN TEPECİK",
+                    students: [
+                        { no: 9, name: "AHMET YAĞIZ SU" },
+                        { no: 30, name: "BELİNAY BİRBEN" },
+                        { no: 37, name: "ÇAĞIL URAS GÜL" },
+                        { no: 42, name: "BULUT TAŞKESER" },
+                        { no: 69, name: "ELİF SU CEBEL" },
+                        { no: 76, name: "DERİN MAVİ KÜÇÜKSU" },
+                        { no: 102, name: "FARAH SAYED" },
+                        { no: 107, name: "HABİB ATMAN" },
+                        { no: 112, name: "FEYZA CEREN KOZ" },
+                        { no: 187, name: "MAKBULE MELTEM MİNA SAYINTA" },
+                        { no: 205, name: "MEHMET ŞAHİN BULUT" },
+                        { no: 208, name: "FATİH EŞREF GÜRDAL" },
+                        { no: 213, name: "MUSTAFA ALİ KARAKUŞ" },
+                        { no: 224, name: "MOSTAFA HAKIMI" },
+                        { no: 227, name: "MÜZEYYEN ELİF TURAMAN" },
+                        { no: 232, name: "NEHİR BAŞYİĞİT" },
+                        { no: 242, name: "RÜZGAR ŞİMŞEK" },
+                        { no: 283, name: "SAFA GHAFOORZAI" },
+                        { no: 287, name: "SARE FIRTINA" },
+                        { no: 290, name: "MUHAMMED EMİN ÖZBEK" },
+                        { no: 299, name: "SEMA GENCER" },
+                        { no: 342, name: "YAĞIZ OSMAN DÖLCEL" },
+                        { no: 368, name: "KÜBRA ÇELİK" },
+                        { no: 378, name: "NİSANUR DEREÇİÇEK" }
+                    ]
+                }
+            },
+            "6": {
+                "A": {
+                    label: "A Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "SİBEL KAYA AYTEN",
+                    students: [
+                        { no: 186, name: "NERMİN KARABULUT" },
+                        { no: 314, name: "SIRAÇ EFE YILDIZ" },
+                        { no: 382, name: "UMUT YAZICI" },
+                        { no: 463, name: "AHMET YİĞİT KILINÇ" },
+                        { no: 471, name: "ASLI HAVVA TARAKÇI" },
+                        { no: 473, name: "BUĞLEM MİNA ŞAHİN" },
+                        { no: 477, name: "CEVAT UYSAL" },
+                        { no: 487, name: "EGE KAAN AKYIL" },
+                        { no: 498, name: "ENES MALİK YİĞİT" },
+                        { no: 503, name: "ESMA BUĞLEM BAŞASLAN" },
+                        { no: 505, name: "EYLÜL ŞURA YILMAZ" },
+                        { no: 513, name: "HARUN ENES MEMİŞ" },
+                        { no: 538, name: "MURAT BUĞRA GÜNDOĞDU" },
+                        { no: 543, name: "MİRSAD EGE EVGİN" },
+                        { no: 556, name: "OBAIDA AMER BADER" },
+                        { no: 562, name: "SUDENUR ÖZDEMİR" },
+                        { no: 567, name: "YADE DEREÇİÇEK" },
+                        { no: 574, name: "YUSUF TALHA PEDÜK" },
+                        { no: 582, name: "ROKAYAH TALIB" },
+                        { no: 589, name: "CEYDA GÜR" },
+                        { no: 593, name: "MELİSA ORTAKAYA" },
+                        { no: 609, name: "CEMRE TURHAN" },
+                        { no: 675, name: "BUĞRA EFE KÖKSOY" },
+                        { no: 677, name: "HİLAL ÇETİN" },
+                        { no: 678, name: "HİRA ÇETİN" },
+                        { no: 680, name: "YİĞİT ÇETİN" },
+                        { no: 715, name: "YAHYO NABOTOV" },
+                        { no: 727, name: "ELA MİRAY YILDIRIM" },
+                        { no: 823, name: "SELİM REŞAT BEYAZ" },
+                        { no: 900, name: "MURAD ISMAYIL" },
+                        { no: 965, name: "ÖMER FARUK İLYASOĞLU" }
+                    ]
+                },
+                "B": {
+                    label: "B Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "OĞUZHAN TURGAY ÖZDEMİR",
+                    students: [
+                        { no: 230, name: "TUNAHAN MUSTAFA ÇIRAK" },
+                        { no: 282, name: "İPEKNUR İKRA ÖZTÜRK" },
+                        { no: 313, name: "ARDA KINALI" },
+                        { no: 344, name: "ECE SU ŞİMŞİR" },
+                        { no: 438, name: "ZEHRA ÖNCÜL" },
+                        { no: 460, name: "ADA TÜRK" },
+                        { no: 485, name: "EDA KINALI" },
+                        { no: 491, name: "ELANUR ZEYBEK" },
+                        { no: 492, name: "ELİF SUDE GÜL" },
+                        { no: 496, name: "EMRE SARSILMAZ" },
+                        { no: 514, name: "HARUN İLBAN" },
+                        { no: 527, name: "MEHMET ÇINAR ARICI" },
+                        { no: 529, name: "MEHMET HAMZA HARTUÇ" },
+                        { no: 546, name: "MİRAÇ EFE BALIK" },
+                        { no: 549, name: "MİNE DALKILIÇ" },
+                        { no: 553, name: "MELİSA ÇETİN" },
+                        { no: 554, name: "NUR RAHİME ÇELİK" },
+                        { no: 560, name: "SARE ÖĞRENÇ" },
+                        { no: 566, name: "ÜMİTİSLAM BAYRAK" },
+                        { no: 570, name: "YİĞİT AKKUŞ" },
+                        { no: 575, name: "ZEYNEB UĞUR" },
+                        { no: 583, name: "UMUT ORAK" },
+                        { no: 584, name: "MARWA GHAFOORZAI" },
+                        { no: 590, name: "TUBA MELİS DAĞDEVİREN" },
+                        { no: 597, name: "EYMEN ARAS KOÇYİĞİT" },
+                        { no: 599, name: "MOHAMMAD TAMIM ASLAMI" },
+                        { no: 600, name: "MUHAMMET TOKGÜN" },
+                        { no: 606, name: "BEKİR IMAD" },
+                        { no: 676, name: "EYÜP ÇETİN" },
+                        { no: 685, name: "ARDEN SEZER" },
+                        { no: 697, name: "ERVA NUR TÜRKAN" },
+                        { no: 821, name: "IBRAHIM MALULLAH IBRAHIM ALAZZAWI" }
+                    ]
+                },
+                "C": {
+                    label: "C Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "BERAT TAN",
+                    students: [
+                        { no: 18, name: "ÖMER KOÇ" },
+                        { no: 61, name: "SERVET EMİR KAYA" },
+                        { no: 320, name: "ARDA UĞUR" },
+                        { no: 359, name: "BERAY KABAN" },
+                        { no: 390, name: "ŞAHİN TUĞRA ŞAHİN" },
+                        { no: 448, name: "BEREN YAZICI" },
+                        { no: 461, name: "AHMET ÇINAR BİTER" },
+                        { no: 469, name: "BARIŞ FİDAN" },
+                        { no: 476, name: "CEYLİN HİRA PAŞA" },
+                        { no: 480, name: "DENİZ YILDIZOĞLU" },
+                        { no: 482, name: "DOĞAN TUNCA" },
+                        { no: 484, name: "ECRİN EVRAN" },
+                        { no: 502, name: "ESLEM SU KÜTÜKCÜOĞLU" },
+                        { no: 504, name: "EYLÜL OK" },
+                        { no: 517, name: "HİRA SU AZMAN" },
+                        { no: 519, name: "IRMAK FİDAN" },
+                        { no: 540, name: "MUHAMMET BERAT TAŞTAN" },
+                        { no: 541, name: "MUSTAFA KEREM KARAŞ" },
+                        { no: 565, name: "TUBA EFSA YILDIZ" },
+                        { no: 568, name: "YAĞIZ EREN KARAKUŞ" },
+                        { no: 569, name: "YAVUZ SELİM SOLMAZ" },
+                        { no: 577, name: "ALİ KEREM BAYRAKTAR" },
+                        { no: 585, name: "NOUH MOHAMED HUSSEIN MOHAMED" },
+                        { no: 601, name: "SAFIA ASLAMI" },
+                        { no: 607, name: "EMİR MOHAMMED HOSSEINI" },
+                        { no: 608, name: "HİRA NUR TUNÇ" },
+                        { no: 613, name: "YASİN CAN MARTİ" },
+                        { no: 690, name: "AYZA SÖNMEZ" },
+                        { no: 700, name: "FATMA ZEHRA BORA" },
+                        { no: 710, name: "MERT ÇINAR YILDIRIM" },
+                        { no: 714, name: "POYRAZ SEZER" },
+                        { no: 797, name: "ARMİNA ESİLA ŞENGÖR" },
+                        { no: 822, name: "SUMAYA MALULLAH IBRAHIM ALAZZAWI" }
+                    ]
+                },
+                "D": {
+                    label: "D Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "MUAMMER YIĞCI",
+                    students: [
+                        { no: 105, name: "EBRAR KARATAŞ" },
+                        { no: 352, name: "EYLÜL KESKİN" },
+                        { no: 464, name: "ALİ ENHAR GÜLERYÜZ" },
+                        { no: 470, name: "AYAZ MAHİR CENGİZ" },
+                        { no: 472, name: "BETÜL KOÇAL" },
+                        { no: 490, name: "ECEM LİNA ÖMÜR" },
+                        { no: 494, name: "EMİNE NUR MUTANOĞLU" },
+                        { no: 506, name: "EYMEN ÖZDEMİR" },
+                        { no: 510, name: "GÜLCE DÜLGER" },
+                        { no: 511, name: "HAMZA BİLAL DURAN" },
+                        { no: 516, name: "HASAN UKKAŞE SEZER" },
+                        { no: 520, name: "IRMAK KAYA" },
+                        { no: 537, name: "MUSAB AYCAN" },
+                        { no: 542, name: "MOHAMMED ABDULLAH ABDULHADI ALHASSAN" },
+                        { no: 550, name: "MİNA ERCAN" },
+                        { no: 552, name: "MENDUHE REYHAN CEYLAN" },
+                        { no: 557, name: "POYRAZ ALİ DURMUŞ" },
+                        { no: 573, name: "YUSUF EFE ÇAKIR" },
+                        { no: 580, name: "MEHMED HİLMİ SEZGİN" },
+                        { no: 595, name: "BERAT SAFA SAYAR" },
+                        { no: 596, name: "CANAN AKKUŞ" },
+                        { no: 679, name: "MUSTAFA ÇETİN" },
+                        { no: 692, name: "YAĞMUR DURNA" },
+                        { no: 711, name: "ONURALP KOÇ" },
+                        { no: 725, name: "GÜLEN ASEL ŞİŞİK" },
+                        { no: 728, name: "BERRE YARAR" },
+                        { no: 730, name: "ELANUR DOĞAN" },
+                        { no: 766, name: "YÜSRA NUR TOKGÜN" },
+                        { no: 808, name: "NURSİMA NEHİR YAĞIZ" }
+                    ]
+                },
+                "E": {
+                    label: "E Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "HATİCE KENAR",
+                    students: [
+                        { no: 262, name: "FAWZIA WAZIR MUHAMMAD" },
+                        { no: 278, name: "ALİ YUSUF YILMAZ" },
+                        { no: 339, name: "BERAT AYDIN" },
+                        { no: 377, name: "EFE BAYAZID GÜVEN" },
+                        { no: 458, name: "UMUT ORUÇLİ" },
+                        { no: 465, name: "AYŞE GÜLCE BİRİNCİ" },
+                        { no: 486, name: "EGE ÇAĞLAR DURMUŞ" },
+                        { no: 518, name: "HÜSNÜ YUSUF SARGINALP" },
+                        { no: 521, name: "IŞIL MİNA ARSLANHAN" },
+                        { no: 522, name: "İLAYDA CEYLAN" },
+                        { no: 524, name: "KİBRA NUR ÖZDEMİR" },
+                        { no: 531, name: "MELEKNUR BAKIŞ" },
+                        { no: 532, name: "NAZLI MİRAY MÜJDE" },
+                        { no: 535, name: "MUSTAFA METEHAN SARIYILDIZ" },
+                        { no: 536, name: "MUSAP TAŞTAN" },
+                        { no: 544, name: "MİRAY İLHAN" },
+                        { no: 545, name: "MİRAÇ MUSTAFA DOĞRU" },
+                        { no: 555, name: "ÖMER FARUK BEŞLER" },
+                        { no: 559, name: "SALİH ZİYA KARTAL" },
+                        { no: 576, name: "ZEYNEP YILMAZ" },
+                        { no: 581, name: "NİL SU ÜSTÜN" },
+                        { no: 586, name: "MOHAMMED ELONE" },
+                        { no: 591, name: "ELİF ECE BAĞKIRAN" },
+                        { no: 594, name: "BERK SIRAT BAT" },
+                        { no: 610, name: "ENES YİLDIRIM" },
+                        { no: 611, name: "ALİ KEREM KAVURKALI" },
+                        { no: 657, name: "MUHAMMED EYMEN KINAY" },
+                        { no: 674, name: "NUR ŞENGÜN" },
+                        { no: 684, name: "ALMIYA ZIYAVEDINOVA" },
+                        { no: 686, name: "BARAN DURNA" },
+                        { no: 688, name: "ASMİN KAYA" },
+                        { no: 693, name: "DİCLE ERTURAN" },
+                        { no: 726, name: "INDIRA MİLLA BAL" },
+                        { no: 746, name: "EYMEN GÜÇLÜ" },
+                        { no: 794, name: "FEYZA SEVİM" },
+                        { no: 804, name: "YUSUF BARAN ÖZBEK" },
+                        { no: 807, name: "JOUD HATIM SAFWAT AWAD" },
+                        { no: 820, name: "HAJIR MALULLAH IBRAHIM ALAZZAWI" }
+                    ]
+                },
+                "F": {
+                    label: "F Şubesi (Çoklu Yabancı Dil)",
+                    teacher: "ÖZGÜL BULUT",
+                    students: [
+                        { no: 94, name: "SÜMEYYE NAZ AYDOĞAN" },
+                        { no: 121, name: "YİĞİT ENSAR KABADAYI" },
+                        { no: 128, name: "AHMET ŞİYAR KAYA" },
+                        { no: 139, name: "EYLÜL TAŞKÖMÜR" },
+                        { no: 279, name: "ALMİRA DAMLA NAMLI" },
+                        { no: 462, name: "AHMET SELİM GÜNGÖR" },
+                        { no: 467, name: "AYŞE NİL SEVER" },
+                        { no: 468, name: "AZRA ÖNDER" },
+                        { no: 475, name: "CELÂL ERDEM" },
+                        { no: 479, name: "DANIZ GURBANOVA" },
+                        { no: 488, name: "EGEHAN GÜRBÜZ" },
+                        { no: 489, name: "EDA DOĞA BİTİRİM" },
+                        { no: 500, name: "ERTUĞRUL NALÇAKAR" },
+                        { no: 501, name: "ERVA PEHLİVAN" },
+                        { no: 508, name: "FAHRETTİN BORA COŞKUN" },
+                        { no: 515, name: "HASAN JAWISH" },
+                        { no: 525, name: "KUMSAL AKYILDIZ" },
+                        { no: 526, name: "KUZEY EMİR SADIK ATABEK" },
+                        { no: 533, name: "MUHAMMED ARDA KARAGÖZ" },
+                        { no: 547, name: "MİRA AVİN SAYINTA" },
+                        { no: 548, name: "MİNEL AYDIN" },
+                        { no: 551, name: "METE MİRAÇ BALCI" },
+                        { no: 563, name: "SÜLEYMAN FATİH YILDIZ" },
+                        { no: 572, name: "YİĞİT ARIKAN" },
+                        { no: 578, name: "ZİHNİ DEMİR" },
+                        { no: 579, name: "ZÜBEYİR ER" },
+                        { no: 587, name: "KAYS ELONE" },
+                        { no: 592, name: "SANA AMİNİ" },
+                        { no: 598, name: "MARYANA ALAA HUSSEIN ALLAMI" },
+                        { no: 682, name: "ABDULLAH NABOTOV" },
+                        { no: 691, name: "BARAN ÇAPALI" },
+                        { no: 694, name: "ELİF ŞENER" },
+                        { no: 704, name: "HÜMEYRA PARSAK" },
+                        { no: 708, name: "MOHAMMED SHIHAB AHMED AL NUAIMI" },
+                        { no: 791, name: "YUSUF MERT KILIÇ" }
+                    ]
+                }
+            },
+            "7": {
+                "A": {
+                    label: "A Şubesi",
+                    teacher: "ZEKİYE ERAY",
+                    students: [
+                        { no: 190, name: "CEMRE SANİYE KOCAELİ" },
+                        { no: 220, name: "SAADET BEGÜM TORUN" },
+                        { no: 298, name: "MOJDEH ASLEMI" },
+                        { no: 493, name: "ÖMER EMBİYA ERTURAN" },
+                        { no: 602, name: "TUĞBA ÇALIKOĞLU" },
+                        { no: 603, name: "AYŞE DİNCER" },
+                        { no: 617, name: "ALTAY YILMAZ" },
+                        { no: 622, name: "BERAT ÇELİK" },
+                        { no: 627, name: "DERİN AZRA ÇAMURCU" },
+                        { no: 628, name: "DENİZ DURMUŞ" },
+                        { no: 630, name: "ELİF KARACA MENGÜTAY" },
+                        { no: 642, name: "GÖKAY ALİ UYGUN" },
+                        { no: 653, name: "KUZEY SAFA BAŞKAN" },
+                        { no: 659, name: "MÜHLİŞAN ÖKÇE" },
+                        { no: 665, name: "MOHAMMAD MERSAD FAZLI" },
+                        { no: 673, name: "NEHİR BİTER" },
+                        { no: 738, name: "SOMYA MOHAMED HUSSEIN MOHAMED" },
+                        { no: 750, name: "YUSUF YAZICI" },
+                        { no: 759, name: "ZEYNEP GÜLSEVER" },
+                        { no: 760, name: "ZAINAB NABEEL ABDULAZEEZ ALSUHAIL" },
+                        { no: 768, name: "MUSTAFA KAYRA KABAY" },
+                        { no: 776, name: "EMRE ÇAKMAK" },
+                        { no: 777, name: "FATİH SULTAN MEHMET BAKİ" },
+                        { no: 782, name: "ERVA TUTKAL" },
+                        { no: 783, name: "SARE DERİN SU" },
+                        { no: 787, name: "MİRAÇ MERT ÖZÇOMAK" },
+                        { no: 818, name: "YAKUB HAMZA SÖYLER" },
+                        { no: 954, name: "ELA REYYAN ÇÖZELİ" },
+                        { no: 961, name: "JANAH AHMED ZIYAD ZIYAD" },
+                        { no: 962, name: "MEHMET BİTER" }
+                    ]
+                },
+                "B": {
+                    label: "B Şubesi",
+                    teacher: "FATMA GÜL ÇAKIR",
+                    students: [
+                        { no: 57, name: "POYRAZ ALİ ARSLAN" },
+                        { no: 82, name: "SAMET EGE YILDIRIM" },
+                        { no: 89, name: "AHMET ALİ URAS" },
+                        { no: 300, name: "NAZ MİRA KISA" },
+                        { no: 396, name: "ZEYNEP DESTEK" },
+                        { no: 604, name: "SAFA HAYDER SAMI ALAZZAWI" },
+                        { no: 621, name: "BETÜL BAŞERLİ" },
+                        { no: 638, name: "EMİRHAN EKMEKÇİ" },
+                        { no: 647, name: "HAVVA ÇELİK" },
+                        { no: 648, name: "HÜSEYİN YAŞAR" },
+                        { no: 650, name: "KÜBRA DEMİR" },
+                        { no: 651, name: "RAVZA KABADAYI" },
+                        { no: 656, name: "MELDA AKÇAY" },
+                        { no: 661, name: "MUSAB ENSAR KAYMAZ" },
+                        { no: 669, name: "MİRAÇ GÖKHAN BORAK" },
+                        { no: 671, name: "NEHİR BAŞ" },
+                        { no: 707, name: "TALHA TOPRAK DİLER" },
+                        { no: 743, name: "ZEYNEP İLBUĞA" },
+                        { no: 755, name: "ZEHRA DEMİR" },
+                        { no: 764, name: "HASAN MERT KANDEMİR" },
+                        { no: 781, name: "SATILMIŞ BERAT CEYLAN" },
+                        { no: 784, name: "MEHMET ÇELİK" },
+                        { no: 785, name: "OMER ABEDİ" },
+                        { no: 803, name: "BERAT TANRIVERDİ" },
+                        { no: 806, name: "HAMZA MERT ARSLAN" },
+                        { no: 815, name: "İLKNUR AYHAN" },
+                        { no: 950, name: "ABDUVAIT TURDIYEV" },
+                        { no: 958, name: "ESMANUR BAYRAM" },
+                        { no: 959, name: "EYLÜL ELA SÖNMEZ" },
+                        { no: 969, name: "SULAIMAN SEDEEQ S. ZAIN ALABIDEEN" }
+                    ]
+                },
+                "C": {
+                    label: "C Şubesi",
+                    teacher: "FATMA KINAY",
+                    students: [
+                        { no: 96, name: "LİVANUR ÖZBEK" },
+                        { no: 193, name: "AMER TAKLAS" },
+                        { no: 245, name: "İSMAİL ÇOBAN" },
+                        { no: 267, name: "CEMRE BOZKURT" },
+                        { no: 317, name: "YUSUF ATABAY" },
+                        { no: 319, name: "YUSUF ENSAR GÜLERYÜZ" },
+                        { no: 331, name: "ZEHRA MİRAY EGE" },
+                        { no: 338, name: "HAMZA LEVENT SARIKAYA" },
+                        { no: 383, name: "MEHMET BİLAL OKAN" },
+                        { no: 588, name: "ENES HAYRİ KONYA" },
+                        { no: 618, name: "AHMED ENSAR AKDENİZ" },
+                        { no: 632, name: "ESMA SEVEN" },
+                        { no: 649, name: "İNCİ NUR ÇAPALI" },
+                        { no: 652, name: "KUZEY BURAK KIVANÇ" },
+                        { no: 658, name: "MURSAL SAYDI" },
+                        { no: 660, name: "MUHAMMET EMİR ÖZTÜRK" },
+                        { no: 664, name: "MUHAMMED POYRAZ TATAŞ" },
+                        { no: 667, name: "MİRAÇ EFE BAYRAK" },
+                        { no: 672, name: "NİSA NUR TAZEGÜL" },
+                        { no: 681, name: "MALAK TAHSEEN MAHMOOD ALALI" },
+                        { no: 706, name: "EYLÜL MERVE KORKUT" },
+                        { no: 742, name: "SELEN MERİÇ" },
+                        { no: 745, name: "TUANA HİRA ÖNCÜL" },
+                        { no: 751, name: "YUNUS EMRE ÖZTÜRK" },
+                        { no: 778, name: "EYMEN YÜCE" },
+                        { no: 793, name: "MUHAMMED RECEP PARSAK" },
+                        { no: 810, name: "MİHRİMAH ATEŞ" },
+                        { no: 960, name: "HAMZA KAYA" },
+                        { no: 963, name: "MUHAMMET İSLAM SEZGİN" },
+                        { no: 967, name: "SELEN ARZU BARAN" },
+                        { no: 972, name: "ZEHRA İZCİ" }
+                    ]
+                },
+                "E": {
+                    label: "E Şubesi",
+                    teacher: "ZEKİYE ERAY",
+                    students: [
+                        { no: 3, name: "FATEMA ANSARI" },
+                        { no: 22, name: "BULUT TAN KAPTI" },
+                        { no: 81, name: "YUSRA İLDİZ" },
+                        { no: 91, name: "DERİN NİSA YİMSEK" },
+                        { no: 148, name: "KUZEY GÜMÜŞLER" },
+                        { no: 241, name: "EMİR KIVANÇ KARGIN" },
+                        { no: 244, name: "ÖZÜM DURU AYDIN" },
+                        { no: 311, name: "ADA MOSAWI" },
+                        { no: 624, name: "CEREN ÜNSAL" },
+                        { no: 631, name: "EKİN GÜNDÜZ" },
+                        { no: 633, name: "ELA SÜLÜN" },
+                        { no: 637, name: "EGEMEN ÇOLAK" },
+                        { no: 639, name: "EMİR ERGUVAN" },
+                        { no: 645, name: "HİRA NUR VAROL" },
+                        { no: 666, name: "NİSANUR YÜCE" },
+                        { no: 719, name: "ORHAN ALİ ÇELİK" },
+                        { no: 732, name: "OĞUZHAN YAĞMUR" },
+                        { no: 733, name: "OSMAN EROL" },
+                        { no: 734, name: "ÖZLEM CEMRE DEMİR" },
+                        { no: 736, name: "MİNA MOSAWI" },
+                        { no: 739, name: "SERRA NUR ÇOLAK" },
+                        { no: 747, name: "UMUT ALP ADIGÜZEL" },
+                        { no: 748, name: "UTKU KAÇAK" },
+                        { no: 749, name: "VEYSEL AYRAL" },
+                        { no: 752, name: "YUNUS EMRE ÖZDEMİR" },
+                        { no: 754, name: "YUSUF ÇALIŞIRİŞÇİ" },
+                        { no: 757, name: "ZÜHRE NUR POLAT" },
+                        { no: 765, name: "ERVA KARATAŞ" },
+                        { no: 809, name: "MUHAMMED EFE AVŞAR" }
+                    ]
+                },
+                "F": {
+                    label: "F Şubesi",
+                    teacher: "BESTE ÖZKANLI",
+                    students: [
+                        { no: 173, name: "ALİ ÖMER ACIOĞLU" },
+                        { no: 259, name: "ÖMER TARHAN" },
+                        { no: 265, name: "YASİR TAHA KIZILIRMAK" },
+                        { no: 619, name: "ALİ HAMZA ŞİMŞEK" },
+                        { no: 625, name: "CEYLİN GÜR" },
+                        { no: 626, name: "CELAL ÇETİN YILDIZ" },
+                        { no: 629, name: "ELİF ECE ÖZKAN" },
+                        { no: 634, name: "ELİF İNCE" },
+                        { no: 635, name: "ENES TALHA İŞ" },
+                        { no: 636, name: "EGEMEN TEZVARAN" },
+                        { no: 640, name: "EGEKADİR TOPRAK" },
+                        { no: 641, name: "GAMZENUR ATASOY" },
+                        { no: 644, name: "HAZAL YILMAZ" },
+                        { no: 646, name: "HÜLYA ŞİLE" },
+                        { no: 654, name: "KEREM ÇELİK" },
+                        { no: 655, name: "MİHRİMAH ZEREN" },
+                        { no: 662, name: "MEHMET BERAN ÖZTEMEL" },
+                        { no: 663, name: "MOHAMMED YAHYA BUSHRA MOHAMMED" },
+                        { no: 668, name: "MUSTAFA UZUN" },
+                        { no: 670, name: "NİSA UÇARKUŞ" },
+                        { no: 735, name: "ÖZGÜR SABRİ İNCE" },
+                        { no: 740, name: "ŞURA BAKIŞ" },
+                        { no: 741, name: "SENA EMİNE DEMİROK" },
+                        { no: 753, name: "YUSUF REBER ÖZİŞİ" },
+                        { no: 756, name: "ZEYNEP ASEL ÇAKALASMA" },
+                        { no: 758, name: "ZEKİ GÜNGÖR" },
+                        { no: 761, name: "EYLÜL BAKAN" },
+                        { no: 762, name: "FATİMA NUR BAL" },
+                        { no: 763, name: "SARP TEBER" },
+                        { no: 771, name: "EYMEN AYAZ CORA" },
+                        { no: 951, name: "ARAS KEREM KARADAMAR" }
+                    ]
+                }
+            },
+            "8": {
+                "A": {
+                    label: "A Şubesi",
+                    teacher: "KADRİYE ÜNAL",
+                    students: [
+                        { no: 68, name: "AMIRSAM EBRAHIMIMOSHTAGHI" },
+                        { no: 71, name: "KÜBRA NUR BALİ" },
+                        { no: 73, name: "DERİN SU CEYLAN" },
+                        { no: 93, name: "ÖMER ÜSTBAŞ" },
+                        { no: 103, name: "ÇAĞRI MERT AYGİRAY" },
+                        { no: 136, name: "TANEM GÜR" },
+                        { no: 146, name: "NEHİR DURU KARAHASAN" },
+                        { no: 180, name: "ZEYNEP ÇİÇEK" },
+                        { no: 183, name: "BEREN CÖMET" },
+                        { no: 195, name: "YASMIN HUSHAM JASIM GALMASH" },
+                        { no: 196, name: "EYMEN SAFA DEMİRTAŞ" },
+                        { no: 221, name: "SUDE AZRA LOKMACI" },
+                        { no: 225, name: "EFE BERK KURT" },
+                        { no: 237, name: "MERVE SU BAL" },
+                        { no: 258, name: "AHMED YASİN ÖZASLAN" },
+                        { no: 266, name: "MEHMET EREN GÖRER" },
+                        { no: 268, name: "MİRAY GENCER" },
+                        { no: 273, name: "MUHAMMED BERAT ÇETİN" },
+                        { no: 276, name: "UĞUR BERKE IŞIK" },
+                        { no: 285, name: "FAIZ ALI MOHAMMADI" },
+                        { no: 289, name: "ZEYNEP RANA AKAN" },
+                        { no: 312, name: "RAVZA KALABALIK" },
+                        { no: 315, name: "STAYESH YOUSUFI" },
+                        { no: 316, name: "TUNAHAN KESKİN" },
+                        { no: 333, name: "BURAK KUTLU" },
+                        { no: 346, name: "JUMAGUL ZIYAVEDINOVA" },
+                        { no: 357, name: "ASIR MOHAMMED THAER ALMAHDAWI" },
+                        { no: 366, name: "YAHYA HUSHAM JASIM GALMASH" },
+                        { no: 801, name: "AYŞENUR PARSAK" },
+                        { no: 887, name: "BENGİSU YILMAZ" }
+                    ]
+                },
+                "B": {
+                    label: "B Şubesi",
+                    teacher: "YEŞİM SALİHA BALLI",
+                    students: [
+                        { no: 26, name: "ABDULLAH MQAYOM" },
+                        { no: 50, name: "YASAMEEN AHMED ABDULRAZZAQ ALHACHAMI" },
+                        { no: 77, name: "NAZLI GÖBEN" },
+                        { no: 80, name: "MİRAY AK" },
+                        { no: 86, name: "SUPHİYE NUR GÜLSEVER" },
+                        { no: 92, name: "ASMİN TİNÇ" },
+                        { no: 101, name: "YAĞMUR ORAL" },
+                        { no: 104, name: "YAŞAR DENİZ BAL" },
+                        { no: 106, name: "BERFİN SÖZER" },
+                        { no: 116, name: "MEHMET EFE KARAOĞLU" },
+                        { no: 123, name: "EYMEN ÖZTURAN" },
+                        { no: 154, name: "ESİLA HİLAL TOSUN" },
+                        { no: 158, name: "AZRA NUR VURDU" },
+                        { no: 172, name: "CALINE GHANDOUR" },
+                        { no: 174, name: "ECRİN ÇAĞLI" },
+                        { no: 177, name: "SERIEN MOHAMED HUSSEIN MOHAMED" },
+                        { no: 199, name: "ENES ER" },
+                        { no: 202, name: "ALI GHAZWAN ISMAIL TABOONA" },
+                        { no: 209, name: "MERAL ALİOĞLU" },
+                        { no: 217, name: "RUQAYAH GHASSAN AAWAEED AAWAEED" },
+                        { no: 235, name: "AHMET SARİKAYA" },
+                        { no: 236, name: "MERT ÖMER KORKMAZ" },
+                        { no: 263, name: "MUHAMMET ALİ ÖZER" },
+                        { no: 280, name: "YUSUF KAYRA ARSLAN" },
+                        { no: 329, name: "YUNUS YILDIRIM" },
+                        { no: 334, name: "ENSAR İPEKÇİ" },
+                        { no: 408, name: "OMAR OTHMAN TALIB" },
+                        { no: 447, name: "YAĞMUR KOÇGÜNDÜZ" },
+                        { no: 499, name: "MUSTAFA EMİR ÖZÇELİK" },
+                        { no: 773, name: "ALPEREN CEYLAN" },
+                        { no: 780, name: "ÖMÜR UZUNLAR" }
+                    ]
+                },
+                "C": {
+                    label: "C Şubesi",
+                    teacher: "CEYLAN DURMAZ KUZU",
+                    students: [
+                        { no: 6, name: "DAVUT EMİR NAZLI" },
+                        { no: 67, name: "ALPEREN CENGİZ" },
+                        { no: 70, name: "HİRA NUR MEMKEZE" },
+                        { no: 72, name: "RAIHANAH YASIR HASAN ALGBURI" },
+                        { no: 83, name: "YAHYA İBRAHİM DEMİRDEN" },
+                        { no: 114, name: "TAHA KAYRA AZMAN" },
+                        { no: 117, name: "YOUSIF MOHAMMED ZABEN ZABEN" },
+                        { no: 120, name: "NİSA EYLÜL SELVİ" },
+                        { no: 124, name: "MUHAMMED TUĞRUL YILMAZ" },
+                        { no: 127, name: "ABDULLAH YALAZ" },
+                        { no: 130, name: "JOLYANA AYAD MOHAMMED ALMAEENI" },
+                        { no: 133, name: "ROJHAT ÖZKAYA" },
+                        { no: 140, name: "RUAA SAAD ABDULHAQ ABDULHAQ" },
+                        { no: 150, name: "BERAT BAT" },
+                        { no: 192, name: "MEHMET EMİN DUMAN" },
+                        { no: 214, name: "MUHAMMET ALİ DEMİR" },
+                        { no: 222, name: "BÜŞRA TOPCU" },
+                        { no: 223, name: "POYRAZ ÇINAR TUNÇER" },
+                        { no: 228, name: "ATİLLA DENİZ GÜNEY" },
+                        { no: 234, name: "MUHAMMED ENES EKİÇİ" },
+                        { no: 248, name: "BEYZA BECERMEN" },
+                        { no: 249, name: "DUA TAŞKIRAN" },
+                        { no: 269, name: "DAMLA ÖZCAN" },
+                        { no: 271, name: "HAYAL ÇETİN" },
+                        { no: 274, name: "SEMA ÇETİN" },
+                        { no: 284, name: "HELENA KAMJOO" },
+                        { no: 288, name: "TUĞÇE ÖCAL" },
+                        { no: 291, name: "IBRAHIM MOHAMED IBRAHIM ELNOUR" },
+                        { no: 326, name: "HAYDER AHMED FAEQ AL GBURI" },
+                        { no: 507, name: "EFE GÜÇLÜ" },
+                        { no: 860, name: "HAVİN ÖZKAYA" },
+                        { no: 889, name: "FİKRET ESEN" }
+                    ]
+                },
+                "D": {
+                    label: "D Şubesi",
+                    teacher: "NESLİHAN FATMA KARACA",
+                    students: [
+                        { no: 66, name: "POYRAZ KAHRAMANOĞLU" },
+                        { no: 74, name: "HAMZA GÖKDEMİR" },
+                        { no: 79, name: "AYBÜKE KARAÇAM" },
+                        { no: 109, name: "EYMEN KUYUCU" },
+                        { no: 129, name: "RECEP RÜZGAR ÖĞ" },
+                        { no: 135, name: "AHMET OĞUZHAN SEZGİN" },
+                        { no: 142, name: "HÜSEYİN EMİN YILDIZ" },
+                        { no: 144, name: "SEMİH KAHYA" },
+                        { no: 151, name: "ESMA BERİL ÇEVİK" },
+                        { no: 152, name: "ASLIHAN URGAÇ" },
+                        { no: 162, name: "BİLAL UMUT YÜCEDAĞ" },
+                        { no: 165, name: "FURKAN EFE SARAÇ" },
+                        { no: 170, name: "AESHA ABDUL LATIF" },
+                        { no: 179, name: "RÜYA ADA BAYBAŞ" },
+                        { no: 194, name: "DERİN BÜYÜKKAYA" },
+                        { no: 197, name: "AHMET EMİR DEMİR" },
+                        { no: 206, name: "ELİFNUR KAYIŞDAĞ" },
+                        { no: 211, name: "MERT NEFİS" },
+                        { no: 240, name: "SIRAÇ FESİH ÇİÇEK" },
+                        { no: 251, name: "METEHAN KALKAN" },
+                        { no: 297, name: "RAHİME AVCI" },
+                        { no: 306, name: "DEMİR KAAN ANDAÇ" },
+                        { no: 328, name: "VEYSEL SEYDA KAYGUSUZ" },
+                        { no: 335, name: "MALAK MOHAMMAD Y. ALBETSHAWEESH" },
+                        { no: 372, name: "MİRAY ÇELİK" },
+                        { no: 389, name: "SUDENAZ DEMİR" },
+                        { no: 616, name: "YUSUF AVCI" },
+                        { no: 775, name: "YUSUF KORKUT" },
+                        { no: 796, name: "İSMAİL GEZER" },
+                        { no: 816, name: "BEYZANUR ÇAMURLU" }
+                    ]
+                },
+                "E": {
+                    label: "E Şubesi",
+                    teacher: "Belirtilmemiş",
+                    students: [
+                        { no: 1, name: "ELİF ÖZTÜRK" },
+                        { no: 5, name: "DURU ÖĞRENÇ" },
+                        { no: 10, name: "ALİ UTKU MUTLU" },
+                        { no: 12, name: "LİVA GÜL ŞAR" },
+                        { no: 24, name: "GİZEM ŞEN" },
+                        { no: 32, name: "HASAN BORA UZUN" },
+                        { no: 33, name: "FEYZA ÖZTÜRK" },
+                        { no: 34, name: "EYMEN ÇINAR" },
+                        { no: 36, name: "CEMRE ŞAKAR" },
+                        { no: 39, name: "ZEYNEP BAŞERLİ" },
+                        { no: 65, name: "MİRAY KARAKUZU" },
+                        { no: 97, name: "TUANA LAYAN BAYTÜRK" },
+                        { no: 147, name: "ÖYKÜ DURU ÇAĞLAR" },
+                        { no: 166, name: "ELVİN ZEREN" },
+                        { no: 167, name: "AKİF EGE YAVUZ" },
+                        { no: 175, name: "YUSUF TOPRAK KOCADEMİR" },
+                        { no: 203, name: "RÜZGAR ENES AKBAŞ" },
+                        { no: 204, name: "FATMA ELA TARAKÇI" },
+                        { no: 281, name: "GÜLBAHAR BAYSOY" },
+                        { no: 301, name: "ASRA BAGHAEINIA" },
+                        { no: 318, name: "YUNUS EMRE TAŞDEMİR" },
+                        { no: 393, name: "KAYRA DEMİR BAYKA" },
+                        { no: 394, name: "SHAHNAZ MURADI" },
+                        { no: 466, name: "YUSUF EREN KUTAN" },
+                        { no: 615, name: "SERDAR YAVUZ" },
+                        { no: 731, name: "MERYEM SUDE SANCAR" }
+                    ]
+                },
+                "F": {
+                    label: "F Şubesi",
+                    teacher: "EMEL KAPLAN",
+                    students: [
+                        { no: 7, name: "AHMET METE KANDEMİR" },
+                        { no: 27, name: "EYÜP EMİR YAPICI" },
+                        { no: 40, name: "AYŞE ASYA YEREBASMAZ" },
+                        { no: 41, name: "ZEYNEP NAZ GÜNDÜZAY" },
+                        { no: 43, name: "RÜZGAR UĞUR" },
+                        { no: 44, name: "FURKAN GÜNER" },
+                        { no: 46, name: "YİĞİT ALP KÜÇÜKER" },
+                        { no: 47, name: "AHMET TOPRAK GÜZEL" },
+                        { no: 48, name: "ZEYNEP HARTUÇ" },
+                        { no: 49, name: "ECE ÇAVUŞOĞLU" },
+                        { no: 52, name: "MİRAY ŞENEL" },
+                        { no: 53, name: "AYŞE ESLEM GÜNER" },
+                        { no: 60, name: "ESİLA İLKİM KIVANÇ" },
+                        { no: 63, name: "YUSUF ÇAKIR" },
+                        { no: 111, name: "ERVA ÖZTURAN" },
+                        { no: 115, name: "RÜZGAR ŞAHİN" },
+                        { no: 122, name: "IŞIL ATALAY" },
+                        { no: 143, name: "MELAHAT EDA ÇABUK" },
+                        { no: 149, name: "YAREN ZEHRA BİRBEN" },
+                        { no: 171, name: "SERRA NUR YILMAZ" },
+                        { no: 207, name: "DURU ZEHRA ERTAN" },
+                        { no: 247, name: "NİSANUR ÖZPEKTÜRK" },
+                        { no: 256, name: "VASFİYE CEYLİN ASLAN" },
+                        { no: 323, name: "AYBIKE AKDOĞAN" },
+                        { no: 343, name: "YUSUF EYMEN BULUT" },
+                        { no: 800, name: "ALEKSA MELİSA KANDEĞER" },
+                        { no: 813, name: "SUDE NAZ ARTAN" }
+                    ]
+                }
+            }
+        };
+
+        // Ortaokul Zorunlu ve Seçmeli Müfredat Dersleri Listesi
+        const COURSES = [
+            // Zorunlu Dersler
+            { id: 'turkce', category: 'mandatory', name: 'Türkçe', defaultDate: '2026-11-04', grades: ['5', '6', '7', '8'] },
+            { id: 'matematik', category: 'mandatory', name: 'Matematik', defaultDate: '2026-11-05', grades: ['5', '6', '7', '8'] },
+            { id: 'fen', category: 'mandatory', name: 'Fen Bilimleri', defaultDate: '2026-11-06', grades: ['5', '6', '7', '8'] },
+            { id: 'sosyal', category: 'mandatory', name: 'Sosyal Bilgiler', badge: '5, 6 ve 7. Sınıflar', defaultDate: '2026-11-09', grades: ['5', '6', '7'] },
+            { id: 'inkilap', category: 'mandatory', name: 'T.C. İnkılap Tarihi ve Atatürkçülük', badge: '8. Sınıflar', defaultDate: '2026-11-09', grades: ['8'] },
+            { id: 'ingilizce', category: 'mandatory', name: 'Yabancı Dil (İngilizce)', defaultDate: '2026-11-10', grades: ['5', '6', '7', '8'] },
+            { id: 'almanca', category: 'mandatory', name: 'Almanca', badge: 'Çoklu Yabancı Dil Şubeleri', defaultDate: '2026-11-10', grades: ['5', '6'] },
+            { id: 'din', category: 'mandatory', name: 'Din Kültürü ve Ahlak Bilgisi', defaultDate: '2026-11-11', grades: ['5', '6', '7', '8'] },
+            { id: 'gorsel', category: 'mandatory', name: 'Görsel Sanatlar', defaultDate: '2026-11-12', grades: ['5', '6', '7', '8'] },
+            { id: 'muzik', category: 'mandatory', name: 'Müzik', defaultDate: '2026-11-12', grades: ['5', '6', '7', '8'] },
+            { id: 'teknoloji', category: 'mandatory', name: 'Teknoloji ve Tasarım', badge: '7 ve 8. Sınıflar', defaultDate: '2026-11-13', grades: ['7', '8'] },
+            { id: 'beden', category: 'mandatory', name: 'Beden Eğitimi / Seçmeli Spor / Fiziki Etkinlik / Oyun Eğitimi', defaultDate: '2026-11-13', grades: ['5', '6', '7', '8'] },
+
+            // Seçmeli Dersler (Ayrı Ayrı Seçilebilir)
+            { id: 'sec_cevre', category: 'elective', name: 'Seçmeli Çevre Eğitimi ve İklim Değişikliği', defaultDate: '2026-11-06', grades: ['5', '6', '7', '8'] },
+            { id: 'sec_kultur1', category: 'elective', name: 'Seçmeli Kültür ve Medeniyetimize Yön Verenler-1', defaultDate: '2026-11-09', grades: ['5', '6', '7', '8'] },
+            { id: 'sec_kultur2', category: 'elective', name: 'Seçmeli Kültür ve Medeniyetimize Yön Verenler-2', defaultDate: '2026-11-09', grades: ['5', '6', '7', '8'] },
+            { id: 'sec_mat_bilim', category: 'elective', name: 'Seçmeli Matematik ve Bilim Uygulamaları', defaultDate: '2026-11-05', grades: ['5', '6', '7', '8'] },
+            { id: 'sec_kuran', category: 'elective', name: "Seçmeli Kur'an-ı Kerim", defaultDate: '2026-11-11', grades: ['5', '6', '7', '8'] },
+            { id: 'sec_peygamber', category: 'elective', name: 'Seçmeli Peygamberimizin Hayatı', defaultDate: '2026-11-11', grades: ['5', '6', '7', '8'] },
+            { id: 'sec_ahlak', category: 'elective', name: 'Seçmeli Ahlak ve Yurttaşlık Eğitimi', defaultDate: '2026-11-11', grades: ['5', '6', '7', '8'] },
+            { id: 'sec_yapay_zeka', category: 'elective', name: 'Seçmeli Yapay Zeka', defaultDate: '2026-11-12', grades: ['5', '6', '7', '8'] },
+            { id: 'sec_robotik', category: 'elective', name: 'Seçmeli Robotik Kodlama', defaultDate: '2026-11-12', grades: ['5', '6', '7', '8'] }
+        ];
+
+        // Uygulama Durumu (Merkezi Bulut Veritabanı ile senkronize çalışır)
+        let uploadedFile = null;
+        let uploadedFileDataUrl = null;
+        window.submissions = [];
+        let pendingDeleteTrackingId = null;
+
+        // Sayfa Yüklendiğinde Başlat
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCoursesGrid();
+            updateBadge();
+            setupFileUpload();
+            setupPhoneFormatter();
+            lucide.createIcons();
+        });
+        // Görsel belgeleri bulut sınırına (1 MB) uygun biçimde otomatik sıkıştıran yardımcı fonksiyon
+        function compressImageDataUrl(dataUrl, maxWidth = 1280, quality = 0.72) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    let { width, height } = img;
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.onerror = () => resolve(dataUrl);
+                img.src = dataUrl;
+            });
+        }
+
+        // Form Doğrulama ve Gönderme
+        document.getElementById('excuse-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearAllErrors();
+
+            let isValid = true;
+            const studentGrade = document.getElementById('studentGrade').value;
+            const studentSection = document.getElementById('studentSection').value;
+            const studentSelectVal = document.getElementById('studentSelect').value;
+            const manualNameVal = document.getElementById('manualStudentName').value.trim();
+            const studentNumber = document.getElementById('studentNumber').value.trim();
+            const parentName = document.getElementById('parentName').value.trim();
+            const parentPhone = document.getElementById('parentPhone').value.trim();
+            const excuseReason = document.getElementById('excuseReason').value.trim();
+            const parentDeclaration = document.getElementById('parentDeclaration').checked;
+            const excuseType = document.querySelector('input[name="excuseType"]:checked').value;
+
+            let resolvedStudentName = '';
+            if (studentSelectVal === 'MANUAL') {
+                resolvedStudentName = manualNameVal;
+            } else if (studentSelectVal) {
+                resolvedStudentName = studentSelectVal.split('|')[1] || '';
+            }
+
+            if (!studentGrade) {
+                setError('studentGrade', 'Sınıf seçiniz.');
+                isValid = false;
+            }
+            if (!studentSection) {
+                setError('studentSection', 'Şube seçiniz.');
+                isValid = false;
+            }
+            if (!studentSelectVal) {
+                setError('studentName', 'Lütfen listeden öğrenci seçiniz.');
+                isValid = false;
+            } else if (studentSelectVal === 'MANUAL' && resolvedStudentName.length < 3) {
+                setError('studentName', 'Lütfen yeni nakil öğrencinin adını ve soyadını giriniz.');
+                isValid = false;
+            }
+            if (!studentNumber || Number(studentNumber) <= 0) {
+                setError('studentNumber', 'Geçerli bir okul numarası bulunamadı.');
+                isValid = false;
+            }
+            if (parentName.length < 3) {
+                setError('parentName', 'Lütfen veli adını ve soyadını giriniz.');
+                isValid = false;
+            }
+            const phoneDigits = parentPhone.replace(/\D/g, '');
+            if (phoneDigits.length < 10) {
+                setError('parentPhone', 'Lütfen 10 veya 11 haneli geçerli bir telefon numarası giriniz.');
+                isValid = false;
+            }
+
+            // Seçilen dersler
+            const checkedCheckboxes = Array.from(document.querySelectorAll('input[name="selectedCourses"]:checked'));
+            if (checkedCheckboxes.length === 0) {
+                setError('courses', 'Lütfen mazeretiniz nedeniyle katılamadığınız en az bir ders seçiniz.');
+                isValid = false;
+            }
+
+            if (excuseReason.length < 10) {
+                setError('excuseReason', 'Lütfen mazeret gerekçenizi en az 10 karakter olacak şekilde açıklayınız.');
+                isValid = false;
+            }
+
+            if (!uploadedFile) {
+                setError('excuseFile', 'Lütfen sağlık raporu, izin belgesi veya geçerli mazeret belgenizi yükleyiniz.');
+                isValid = false;
+            }
+
+            if (!parentDeclaration) {
+                setError('parentDeclaration', 'Başvuruyu tamamlamak için veli beyan ve onay kutusunu işaretlemelisiniz.');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                showToast('Eksik veya Hatalı Bilgi', 'Lütfen kırmızı ile işaretlenen zorunlu alanları kontrol ederek tamamlayınız.', 'error');
+                const firstError = document.querySelector('p[id^="err-"]:not(.hidden)');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-application-btn');
+            const submitBtnText = document.getElementById('submit-btn-text');
+            submitBtn.disabled = true;
+            submitBtnText.textContent = 'Başvuru Kaydediliyor...';
+
+            try {
+                // Seçilen dersleri ve tarihlerini topla
+                const selectedCourses = checkedCheckboxes.map(cb => {
+                    const courseObj = COURSES.find(c => c.id === cb.value);
+                    const rawDate = document.getElementById(`date-${cb.value}`).value;
+                    return {
+                        id: courseObj.id,
+                        name: courseObj.name,
+                        date: formatDateTR(rawDate)
+                    };
+                });
+
+                // Yeni başvuru nesnesi oluştur
+                const now = new Date();
+                const randomCode = Math.floor(1000 + Math.random() * 9000);
+                const trackingId = `SC-2026-${randomCode}`;
+
+                // Belgeyi bulut doküman sınırına (~750 KB) sığacak şekilde hazırla
+                let storedFileData = null;
+                let storedFileType = uploadedFile.type;
+                if (uploadedFileDataUrl) {
+                    if (uploadedFile.type.startsWith('image/')) {
+                        storedFileData = await compressImageDataUrl(uploadedFileDataUrl, 1280, 0.72);
+                        storedFileType = 'image/jpeg';
+                    } else if (uploadedFileDataUrl.length <= 750000) {
+                        storedFileData = uploadedFileDataUrl;
+                    }
+                }
+
+                const submission = {
+                    trackingId,
+                    createdAtMs: now.getTime(),
+                    timestamp: now.toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                    studentName: resolvedStudentName.toLocaleUpperCase('tr-TR'),
+                    studentGrade,
+                    studentSection,
+                    classSection: `${studentGrade}/${studentSection}`,
+                    studentNumber: String(studentNumber),
+                    parentName: parentName.toLocaleUpperCase('tr-TR'),
+                    parentPhone,
+                    courses: selectedCourses,
+                    excuseType,
+                    excuseReason,
+                    status: 'Beklemede',
+                    fileName: uploadedFile.name,
+                    fileType: storedFileType,
+                    fileData: storedFileData
+                };
+
+                // Bulut veritabanına kaydet
+                if (typeof window.cloudSaveSubmission === 'function') {
+                    await window.cloudSaveSubmission(submission);
+                } else {
+                    window.submissions.unshift(submission);
+                    window.updateBadge();
+                    window.renderAdminTable();
+                }
+
+                populateReceipt(submission);
+                document.getElementById('excuse-form').classList.add('hidden');
+                document.getElementById('receipt-section').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showToast('Başvuru Alındı', `${trackingId} takip numarası ile mazeret başvurunuz sisteme kaydedildi.`, 'success');
+            } catch (err) {
+                console.error('Kayıt hatası:', err);
+                showToast('Kayıt Hatası', 'Başvuru kaydedilirken bir bağlantı sorunu oluştu. Lütfen tekrar deneyiniz.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtnText.textContent = 'Mazeret Başvurusunu Gönder';
+            }
+        });
+
+        // Sınıf Düzeyi Değiştiğinde Şubeleri Doldur ve Dersleri Vurgula
+        function onGradeChange() {
+            const selectedGrade = document.getElementById('studentGrade').value;
+            const sectionSelect = document.getElementById('studentSection');
+            const teacherBadge = document.getElementById('teacher-info-badge');
+            const hintEl = document.getElementById('course-grade-hint');
+
+            clearError('studentGrade');
+            teacherBadge.classList.add('hidden');
+            resetStudentFields();
+
+            if (!selectedGrade || !SCHOOL_ROSTER[selectedGrade]) {
+                sectionSelect.innerHTML = '<option value="">Önce Sınıf Seçiniz</option>';
+                sectionSelect.disabled = true;
+                hintEl.textContent = '03 - 13 Kasım 2026 tarihleri arasında girilemeyen dersleri ayrı ayrı seçiniz';
+                COURSES.forEach(c => {
+                    const card = document.getElementById(`card-${c.id}`);
+                    if (card) card.classList.remove('opacity-55');
+                });
+                return;
+            }
+
+            const sections = SCHOOL_ROSTER[selectedGrade];
+            let optionsHtml = '<option value="">Şube Seçiniz</option>';
+            Object.keys(sections).forEach(secKey => {
+                optionsHtml += `<option value="${secKey}">${secKey} Şubesi (${sections[secKey].students.length} Öğrenci)</option>`;
+            });
+            sectionSelect.innerHTML = optionsHtml;
+            sectionSelect.disabled = false;
+
+            hintEl.textContent = `${selectedGrade}. Sınıf düzeyi vurgulanmıştır (İstenirse tüm dersler ayrı ayrı seçilebilir)`;
+            COURSES.forEach(c => {
+                const card = document.getElementById(`card-${c.id}`);
+                const checkbox = document.querySelector(`input[name="selectedCourses"][value="${c.id}"]`);
+                if (!card) return;
+                const isRecommended = c.grades.includes(selectedGrade);
+                if (!isRecommended && !(checkbox && checkbox.checked)) {
+                    card.classList.add('opacity-55');
+                } else {
+                    card.classList.remove('opacity-55');
+                }
+            });
+        }
+
+        function onSectionChange() {
+            const grade = document.getElementById('studentGrade').value;
+            const section = document.getElementById('studentSection').value;
+            const teacherBadge = document.getElementById('teacher-info-badge');
+            const filterWrapper = document.getElementById('student-filter-wrapper');
+            const quickSearchInput = document.getElementById('studentQuickSearch');
+
+            clearError('studentSection');
+            resetStudentFields();
+
+            if (!grade || !section || !SCHOOL_ROSTER[grade]?.[section]) {
+                teacherBadge.classList.add('hidden');
+                filterWrapper.classList.add('hidden');
+                return;
+            }
+
+            const secData = SCHOOL_ROSTER[grade][section];
+            if (secData.teacher && secData.teacher !== 'Belirtilmemiş') {
+                teacherBadge.textContent = `Sınıf Rehber Öğretmeni: ${secData.teacher}`;
+                teacherBadge.classList.remove('hidden');
+            } else {
+                teacherBadge.classList.add('hidden');
+            }
+
+            quickSearchInput.value = '';
+            filterWrapper.classList.remove('hidden');
+            populateStudentDropdown(secData.students);
+            lucide.createIcons();
+        }
+
+        function populateStudentDropdown(studentsList) {
+            const studentSelect = document.getElementById('studentSelect');
+            const countHint = document.getElementById('roster-count-hint');
+
+            countHint.textContent = `${studentsList.length} kayıtlı öğrenci`;
+
+            let optionsHtml = '<option value="">Öğrenci Seçiniz...</option>';
+            studentsList.forEach(st => {
+                optionsHtml += `<option value="${st.no}|${st.name}">${st.no} - ${st.name}</option>`;
+            });
+            optionsHtml += '<option value="MANUAL">-- Listede Yok / Manuel Giriş (Yeni Nakil) --</option>';
+
+            studentSelect.innerHTML = optionsHtml;
+            studentSelect.disabled = false;
+        }
+
+        function filterStudentDropdown() {
+            const grade = document.getElementById('studentGrade').value;
+            const section = document.getElementById('studentSection').value;
+            if (!grade || !section || !SCHOOL_ROSTER[grade]?.[section]) return;
+
+            const query = document.getElementById('studentQuickSearch').value.toLocaleLowerCase('tr-TR').trim();
+            const allStudents = SCHOOL_ROSTER[grade][section].students;
+
+            const filtered = !query
+                ? allStudents
+                : allStudents.filter(st =>
+                    st.name.toLocaleLowerCase('tr-TR').includes(query) ||
+                    String(st.no).includes(query)
+                );
+
+            populateStudentDropdown(filtered);
+            if (filtered.length === 1) {
+                const studentSelect = document.getElementById('studentSelect');
+                studentSelect.selectedIndex = 1;
+                onStudentSelectChange();
+            }
+        }
+
+        function onStudentSelectChange() {
+            const val = document.getElementById('studentSelect').value;
+            const numberInput = document.getElementById('studentNumber');
+            const manualBox = document.getElementById('manual-student-box');
+            const lockIcon = document.getElementById('number-lock-icon');
+
+            clearError('studentName');
+            clearError('studentNumber');
+
+            if (!val) {
+                numberInput.value = '';
+                numberInput.readOnly = true;
+                numberInput.classList.add('bg-slate-100');
+                numberInput.classList.remove('bg-white');
+                manualBox.classList.add('hidden');
+                lockIcon.classList.remove('hidden');
+                return;
+            }
+
+            if (val === 'MANUAL') {
+                manualBox.classList.remove('hidden');
+                numberInput.value = '';
+                numberInput.readOnly = false;
+                numberInput.placeholder = 'Okul no giriniz';
+                numberInput.classList.remove('bg-slate-100');
+                numberInput.classList.add('bg-white');
+                lockIcon.classList.add('hidden');
+                document.getElementById('manualStudentName').focus();
+                return;
+            }
+
+            // Seçilen öğrencinin okul numarasını otomatik doldur ve kilitle
+            const [studentNo] = val.split('|');
+            manualBox.classList.add('hidden');
+            numberInput.value = studentNo;
+            numberInput.readOnly = true;
+            numberInput.classList.add('bg-slate-100');
+            numberInput.classList.remove('bg-white');
+            lockIcon.classList.remove('hidden');
+        }
+
+        function resetStudentFields() {
+            const studentSelect = document.getElementById('studentSelect');
+            const filterWrapper = document.getElementById('student-filter-wrapper');
+            const quickSearchInput = document.getElementById('studentQuickSearch');
+            const countHint = document.getElementById('roster-count-hint');
+            const manualBox = document.getElementById('manual-student-box');
+            const manualInput = document.getElementById('manualStudentName');
+            const numberInput = document.getElementById('studentNumber');
+            const lockIcon = document.getElementById('number-lock-icon');
+
+            studentSelect.innerHTML = '<option value="">Önce Sınıf ve Şube Seçiniz</option>';
+            studentSelect.disabled = true;
+            filterWrapper.classList.add('hidden');
+            quickSearchInput.value = '';
+            countHint.textContent = '';
+            manualBox.classList.add('hidden');
+            manualInput.value = '';
+
+            numberInput.value = '';
+            numberInput.readOnly = true;
+            numberInput.placeholder = 'Otomatik dolar';
+            numberInput.classList.add('bg-slate-100');
+            numberInput.classList.remove('bg-white');
+            lockIcon.classList.remove('hidden');
+        }
+
+        // Ders Seçim Kartlarını Oluştur (Zorunlu ve Seçmeli Dersler Ayrı Kategorilerde)
+        function renderCourseCardHTML(course) {
+            const isElective = course.category === 'elective';
+            const baseBg = isElective ? 'bg-amber-50/40 border-amber-200/80' : 'bg-slate-50/70 border-slate-200';
+            const badgeHtml = course.badge
+                ? `<span class="inline-block ml-1.5 px-1.5 py-0.5 text-[10px] font-semibold rounded bg-slate-200/80 text-slate-600">${course.badge}</span>`
+                : '';
+
+            return `
+                <div class="course-item flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl border ${baseBg} transition-all" id="card-${course.id}">
+                    <label class="flex items-start sm:items-center gap-2.5 cursor-pointer select-none flex-1">
+                        <input type="checkbox" name="selectedCourses" value="${course.id}" onchange="toggleCourseDate('${course.id}')"
+                            class="mt-0.5 sm:mt-0 h-4 w-4 rounded text-meb-navy focus:ring-meb-navy border-slate-300 shrink-0">
+                        <span class="text-xs sm:text-sm font-semibold text-slate-800 leading-snug">
+                            ${course.name}${badgeHtml}
+                        </span>
+                    </label>
+                    <div class="flex items-center gap-1.5 pl-6 sm:pl-0 shrink-0">
+                        <span class="text-[11px] text-slate-500">Sınav Tarihi:</span>
+                        <input type="date" id="date-${course.id}" min="2026-11-03" max="2026-11-13" value="${course.defaultDate}" disabled
+                            class="px-2 py-1 text-xs bg-white border border-slate-200 rounded-lg text-slate-600 disabled:opacity-40 disabled:bg-slate-100 focus:outline-none focus:border-meb-navy">
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCoursesGrid() {
+            const mandatoryContainer = document.getElementById('mandatory-courses-grid');
+            const electiveContainer = document.getElementById('elective-courses-grid');
+
+            mandatoryContainer.innerHTML = COURSES
+                .filter(c => c.category === 'mandatory')
+                .map(renderCourseCardHTML)
+                .join('');
+
+            electiveContainer.innerHTML = COURSES
+                .filter(c => c.category === 'elective')
+                .map(renderCourseCardHTML)
+                .join('');
+        }
+
+        // Ders seçildiğinde tarih alanını aktif et
+        function toggleCourseDate(courseId) {
+            const checkbox = document.querySelector(`input[name="selectedCourses"][value="${courseId}"]`);
+            const dateInput = document.getElementById(`date-${courseId}`);
+            const card = document.getElementById(`card-${courseId}`);
+            const courseObj = COURSES.find(c => c.id === courseId);
+            const isElective = courseObj && courseObj.category === 'elective';
+            const selectedGrade = document.getElementById('studentGrade').value;
+
+            if (checkbox.checked) {
+                dateInput.disabled = false;
+                card.classList.remove('opacity-55', 'border-slate-200', 'bg-slate-50/70', 'border-amber-200/80', 'bg-amber-50/40');
+                card.classList.add('border-meb-navy', 'bg-blue-50/40');
+            } else {
+                dateInput.disabled = true;
+                card.classList.remove('border-meb-navy', 'bg-blue-50/40');
+                if (isElective) {
+                    card.classList.add('border-amber-200/80', 'bg-amber-50/40');
+                } else {
+                    card.classList.add('border-slate-200', 'bg-slate-50/70');
+                }
+                if (selectedGrade && courseObj && !courseObj.grades.includes(selectedGrade)) {
+                    card.classList.add('opacity-55');
+                }
+            }
+        }
+
+        // Telefon numarası otomatik biçimlendirme
+        function setupPhoneFormatter() {
+            const phoneInput = document.getElementById('parentPhone');
+            phoneInput.addEventListener('input', (e) => {
+                let digits = e.target.value.replace(/\D/g, '');
+                if (digits.length > 11) digits = digits.slice(0, 11);
+                
+                let formatted = digits;
+                if (digits.length > 4 && digits.length <= 7) {
+                    formatted = `${digits.slice(0, 4)} ${digits.slice(4)}`;
+                } else if (digits.length > 7 && digits.length <= 9) {
+                    formatted = `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
+                } else if (digits.length > 9) {
+                    formatted = `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7, 9)} ${digits.slice(9)}`;
+                }
+                e.target.value = formatted;
+            });
+        }
+
+        // Dosya Yükleme ve Sürükle-Bırak İşlemleri
+        function setupFileUpload() {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('excuseFile');
+
+            dropZone.addEventListener('click', (e) => {
+                if (e.target.closest('button')) return;
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    handleFileSelection(e.target.files[0]);
+                }
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.add('border-meb-navy', 'bg-blue-50/50');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropZone.classList.remove('border-meb-navy', 'bg-blue-50/50');
+                });
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                if (dt.files && dt.files[0]) {
+                    handleFileSelection(dt.files[0]);
+                }
+            });
+        }
+
+        function handleFileSelection(file) {
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+            const maxSize = 10 * 1024 * 1024; // 10 MB
+
+            if (!allowedTypes.includes(file.type)) {
+                showToast('Geçersiz Dosya Formatı', 'Lütfen yalnızca PDF, JPG veya PNG formatında bir mazeret belgesi yükleyiniz.', 'error');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                showToast('Dosya Boyutu Çok Büyük', 'Yükleyeceğiniz belge en fazla 10 MB boyutunda olmalıdır.', 'error');
+                return;
+            }
+
+            uploadedFile = file;
+            uploadedFileDataUrl = null;
+            clearError('excuseFile');
+
+            // Önizleme arayüzünü güncelle
+            document.getElementById('upload-placeholder').classList.add('hidden');
+            const previewBox = document.getElementById('file-preview-box');
+            previewBox.classList.remove('hidden');
+
+            document.getElementById('file-name-display').textContent = file.name;
+            const sizeKB = (file.size / 1024).toFixed(1);
+            const sizeText = file.size > 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(2)} MB` : `${sizeKB} KB`;
+            const ext = file.name.split('.').pop().toUpperCase();
+            document.getElementById('file-meta-display').textContent = `${ext} Belgesi • ${sizeText}`;
+
+            const thumbContainer = document.getElementById('file-thumb-container');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedFileDataUrl = e.target.result;
+                if (file.type.startsWith('image/')) {
+                    thumbContainer.innerHTML = `<img src="${e.target.result}" alt="Belge Önizleme" class="w-full h-full object-cover">`;
+                }
+            };
+            reader.readAsDataURL(file);
+
+            if (!file.type.startsWith('image/')) {
+                thumbContainer.innerHTML = `<i data-lucide="file-text" class="w-7 h-7 text-meb-red"></i>`;
+                lucide.createIcons();
+            }
+        }
+
+        function removeFile(e) {
+            if (e) e.stopPropagation();
+            uploadedFile = null;
+            uploadedFileDataUrl = null;
+            document.getElementById('excuseFile').value = '';
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+            document.getElementById('file-preview-box').classList.add('hidden');
+        }
+
+        // Alındı Belgesini Doldur
+        function populateReceipt(data) {
+            document.getElementById('rec-trackingId').textContent = data.trackingId;
+            document.getElementById('rec-timestamp').textContent = data.timestamp;
+            document.getElementById('rec-studentName').textContent = data.studentName;
+            document.getElementById('rec-classSection').textContent = `${data.classSection} Sınıfı`;
+            document.getElementById('rec-studentNumber').textContent = data.studentNumber;
+            document.getElementById('rec-parentName').textContent = data.parentName;
+            document.getElementById('rec-parentPhone').textContent = data.parentPhone;
+            document.getElementById('rec-excuseType').textContent = data.excuseType;
+            document.getElementById('rec-excuseReason').textContent = data.excuseReason;
+            document.getElementById('rec-fileName').textContent = data.fileName;
+            document.getElementById('rec-signParent').textContent = data.parentName;
+
+            const tbody = document.getElementById('rec-courses-tbody');
+            tbody.innerHTML = (data.courses || []).map((c, idx) => `
+                <tr>
+                    <td class="py-2 px-3.5 font-semibold text-slate-600">${idx + 1}</td>
+                    <td class="py-2 px-3.5 font-bold text-slate-900">${c.name}</td>
+                    <td class="py-2 px-3.5 text-slate-700">${c.date}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Sekme Geçişleri, Duyuru Kopyalama, Form Sıfırlama ve Hata Yönetimi
+        function switchTab(tabName) {
+            const formView = document.getElementById('view-form');
+            const adminView = document.getElementById('view-admin');
+            const formBtn = document.getElementById('tab-form-btn');
+            const adminBtn = document.getElementById('tab-admin-btn');
+
+            if (tabName === 'admin') {
+                formView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                adminBtn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-meb-navy shadow-sm transition-all flex items-center gap-1.5';
+                formBtn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold text-white hover:bg-white/10 transition-all flex items-center gap-1.5';
+                if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
+            } else {
+                adminView.classList.add('hidden');
+                formView.classList.remove('hidden');
+                formBtn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-meb-navy shadow-sm transition-all flex items-center gap-1.5';
+                adminBtn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold text-white hover:bg-white/10 transition-all flex items-center gap-1.5';
+            }
+            lucide.createIcons();
+        }
+
+        function toggleAnnouncement() {
+            const body = document.getElementById('announcement-body');
+            const btn = document.getElementById('announcement-toggle-btn');
+            const isHidden = body.classList.toggle('hidden');
+            btn.innerHTML = isHidden
+                ? '<i data-lucide="chevron-down" class="w-4 h-4"></i>'
+                : '<i data-lucide="chevron-up" class="w-4 h-4"></i>';
+            lucide.createIcons();
+        }
+
+        function copyAnnouncement() {
+            const text = `T.C. YALOVA VALİLİĞİ - Saffet Çam Ortaokulu Müdürlüğü\n\nDeğerli Velilerimiz ve Sevgili Öğrencilerimiz,\nOkulumuzda 03 - 13 Kasım 2026 tarihleri arasında gerçekleştirilen 1. Dönem 1. Ortak Yazılı Sınavlarına; sağlık raporu, resmi izin belgesi veya okul idaresince kabul edilebilir geçerli bir mazereti nedeniyle katılamayan öğrencilerimiz için 23 - 27 Kasım 2026 tarihleri arasında mazeret sınavları yapılacaktır.\n\nMazeret sınavlarına katılacak öğrencilerimizin mağduriyet yaşamamaları adına; sağlık raporlarını, izin belgelerini veya geçerli mazeretlerini gösterir resmî belgelerini başvuru formunu eksiksiz doldurarak en geç 20 Kasım 2026 Cuma günü mesai bitimine kadar okulumuz müdürlüğüne bildirmeleri gerekmektedir.`;
+            const tempArea = document.createElement('textarea');
+            tempArea.value = text;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+            showToast('Duyuru Kopyalandı', 'Duyuru metni panoya kopyalandı. Veli gruplarında paylaşabilirsiniz.', 'success');
+        }
+
+        function resetForm() {
+            document.getElementById('excuse-form').reset();
+            clearAllErrors();
+            removeFile();
+            document.getElementById('teacher-info-badge').classList.add('hidden');
+            document.getElementById('studentSection').innerHTML = '<option value="">Önce Sınıf Seçiniz</option>';
+            document.getElementById('studentSection').disabled = true;
+            resetStudentFields();
+            COURSES.forEach(c => {
+                const dateInput = document.getElementById(`date-${c.id}`);
+                const card = document.getElementById(`card-${c.id}`);
+                if (dateInput) dateInput.disabled = true;
+                if (card) {
+                    card.classList.remove('opacity-55', 'border-meb-navy', 'bg-blue-50/40');
+                    if (c.category === 'elective') {
+                        card.classList.add('border-amber-200/80', 'bg-amber-50/40');
+                    } else {
+                        card.classList.add('border-slate-200', 'bg-slate-50/70');
+                    }
+                }
+            });
+        }
+
+        function startNewApplication() {
+            resetForm();
+            document.getElementById('receipt-section').classList.add('hidden');
+            document.getElementById('excuse-form').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setError(fieldId, msg) {
+            const errEl = document.getElementById(`err-${fieldId}`);
+            if (errEl) {
+                errEl.textContent = msg;
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        function clearError(fieldId) {
+            const errEl = document.getElementById(`err-${fieldId}`);
+            if (errEl) {
+                errEl.textContent = '';
+                errEl.classList.add('hidden');
+            }
+        }
+
+        function clearAllErrors() {
+            document.querySelectorAll('p[id^="err-"]').forEach(el => {
+                el.textContent = '';
+                el.classList.add('hidden');
+            });
+        }
+
+        // Merkezi Kayıt Sayacı ve İstatistik Güncelleme
+        window.updateBadge = function() {
+            const list = window.submissions || [];
+            document.getElementById('submission-count-badge').textContent = list.length;
+
+            const statTotal = document.getElementById('stat-total');
+            if (statTotal) {
+                statTotal.textContent = list.length;
+                document.getElementById('stat-g5').textContent = list.filter(s => s.studentGrade === '5').length;
+                document.getElementById('stat-g6').textContent = list.filter(s => s.studentGrade === '6').length;
+                document.getElementById('stat-g7').textContent = list.filter(s => s.studentGrade === '7').length;
+                document.getElementById('stat-g8').textContent = list.filter(s => s.studentGrade === '8').length;
+                document.getElementById('stat-approved').textContent = list.filter(s => s.status === 'Onaylandı').length;
+            }
+        };
+
+        function getFilteredSubmissions() {
+            const list = window.submissions || [];
+            const searchQuery = document.getElementById('admin-search').value.toLowerCase().trim();
+            const gradeFilter = document.getElementById('admin-grade-filter').value;
+            const sectionFilter = document.getElementById('admin-section-filter').value;
+            const statusFilter = document.getElementById('admin-status-filter').value;
+            const courseFilter = document.getElementById('admin-course-filter').value;
+
+            return list.filter(item => {
+                const itemStatus = item.status || 'Beklemede';
+                const matchesGrade = !gradeFilter || item.studentGrade === gradeFilter;
+                const matchesSection = !sectionFilter || item.studentSection === sectionFilter;
+                const matchesStatus = !statusFilter || itemStatus === statusFilter;
+                const matchesCourse = !courseFilter || (item.courses || []).some(c => c.id === courseFilter);
+                const matchesSearch = !searchQuery || 
+                    (item.studentName || '').toLowerCase().includes(searchQuery) ||
+                    String(item.studentNumber || '').includes(searchQuery) ||
+                    (item.trackingId || '').toLowerCase().includes(searchQuery) ||
+                    (item.parentName || '').toLowerCase().includes(searchQuery);
+                return matchesGrade && matchesSection && matchesStatus && matchesCourse && matchesSearch;
+            });
+        }
+
+        // İdare Tablosunu Oluştur
+        window.renderAdminTable = function() {
+            const tbody = document.getElementById('admin-tbody');
+            const emptyState = document.getElementById('admin-empty-state');
+            const filtered = getFilteredSubmissions();
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tbody.innerHTML = filtered.map(item => {
+                const currentStatus = item.status || 'Beklemede';
+                let statusBadgeClass = 'bg-slate-100 text-slate-700 border-slate-300';
+                if (currentStatus === 'Onaylandı') {
+                    statusBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-300';
+                } else if (currentStatus === 'Eksik Belge') {
+                    statusBadgeClass = 'bg-red-50 text-meb-darkred border-red-300';
+                }
+
+                return `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-3 px-4 font-mono text-xs font-bold text-meb-navy whitespace-nowrap">
+                        ${item.trackingId}
+                        <span class="block text-[10px] font-sans font-normal text-slate-400">${item.timestamp}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-slate-900">${item.studentName}</div>
+                        <div class="text-xs text-slate-500">${item.classSection} Sınıfı • No: ${item.studentNumber}</div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="font-medium text-slate-800">${item.parentName}</div>
+                        <div class="text-xs text-slate-500">${item.parentPhone}</div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="flex flex-wrap gap-1">
+                            ${(item.courses || []).map(c => `<span class="px-2 py-0.5 bg-blue-50 text-meb-navy border border-blue-200 rounded-md text-[11px] font-semibold">${c.name}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">${item.excuseType}</span>
+                        <div class="text-[11px] text-slate-500 mt-1 truncate max-w-[160px]" title="${item.fileName}">📎 ${item.fileName}</div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        <select onchange="changeSubmissionStatus('${item.trackingId}', this.value)"
+                            class="px-2.5 py-1.5 rounded-lg text-xs font-bold border ${statusBadgeClass} focus:outline-none cursor-pointer">
+                            <option value="Beklemede" ${currentStatus === 'Beklemede' ? 'selected' : ''}>⏳ Beklemede</option>
+                            <option value="Onaylandı" ${currentStatus === 'Onaylandı' ? 'selected' : ''}>✅ Onaylandı</option>
+                            <option value="Eksik Belge" ${currentStatus === 'Eksik Belge' ? 'selected' : ''}>⚠️ Eksik Belge</option>
+                        </select>
+                    </td>
+                    <td class="py-3 px-4 text-right whitespace-nowrap">
+                        <div class="inline-flex items-center gap-1.5">
+                            <button type="button" onclick="openDocModal('${item.trackingId}')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100 transition-colors" title="Yüklenen Mazeret Belgesini İncele">
+                                Rapor / Belge
+                            </button>
+                            <button type="button" onclick="viewReceiptFromAdmin('${item.trackingId}')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-meb-navy text-white hover:bg-slate-800 transition-colors">
+                                Alındı
+                            </button>
+                            <button type="button" onclick="requestDeleteSubmission('${item.trackingId}')" class="p-1.5 rounded-lg text-xs font-semibold bg-red-50 text-meb-red border border-red-200 hover:bg-red-100 transition-colors" title="Kaydı Sil">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        };
+
+        async function changeSubmissionStatus(trackingId, newStatus) {
+            try {
+                if (typeof window.cloudUpdateStatus === 'function') {
+                    await window.cloudUpdateStatus(trackingId, newStatus);
+                } else {
+                    const target = window.submissions.find(s => s.trackingId === trackingId);
+                    if (target) target.status = newStatus;
+                    window.updateBadge();
+                    window.renderAdminTable();
+                }
+                showToast('Durum Güncellendi', `${trackingId} numaralı başvurunun durumu "${newStatus}" olarak işaretlendi.`, 'success');
+            } catch (err) {
+                showToast('Güncelleme Hatası', 'Başvuru durumu güncellenemedi.', 'error');
+            }
+        }
+
+        function requestDeleteSubmission(trackingId) {
+            const item = (window.submissions || []).find(s => s.trackingId === trackingId);
+            if (!item) return;
+            pendingDeleteTrackingId = trackingId;
+            document.getElementById('delete-confirm-text').textContent =
+                `${item.studentName} (${item.classSection} - Takip No: ${item.trackingId}) adlı öğrencinin mazeret başvuru kaydını kalıcı olarak silmek istediğinize emin misiniz?`;
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteTrackingId = null;
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+        }
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            if (!pendingDeleteTrackingId) return;
+            const targetId = pendingDeleteTrackingId;
+            closeDeleteModal();
+            try {
+                if (typeof window.cloudDeleteSubmission === 'function') {
+                    await window.cloudDeleteSubmission(targetId);
+                } else {
+                    window.submissions = window.submissions.filter(s => s.trackingId !== targetId);
+                    window.updateBadge();
+                    window.renderAdminTable();
+                }
+                showToast('Kayıt Silindi', `${targetId} numaralı başvuru kaydı silindi.`, 'success');
+            } catch (err) {
+                showToast('Silme Hatası', 'Kayıt silinirken bir hata oluştu.', 'error');
+            }
+        });
+
+        function printAdminSummary() {
+            const filtered = getFilteredSubmissions();
+            if (filtered.length === 0) {
+                showToast('Liste Boş', 'Yazdırılacak başvuru kaydı bulunamadı.', 'error');
+                return;
+            }
+            const nowStr = new Date().toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            document.getElementById('print-admin-meta').textContent = `Yazdırma Tarihi: ${nowStr} • Toplam Listelenen Öğrenci: ${filtered.length}`;
+            document.getElementById('print-admin-tbody').innerHTML = filtered.map((item, i) => `
+                <tr>
+                    <td class="border border-slate-400 p-1.5">${i + 1}</td>
+                    <td class="border border-slate-400 p-1.5 font-mono">${item.trackingId}</td>
+                    <td class="border border-slate-400 p-1.5 font-semibold">${item.classSection}</td>
+                    <td class="border border-slate-400 p-1.5">${item.studentNumber}</td>
+                    <td class="border border-slate-400 p-1.5 font-bold">${item.studentName}</td>
+                    <td class="border border-slate-400 p-1.5">${item.excuseType}</td>
+                    <td class="border border-slate-400 p-1.5">${(item.courses || []).map(c => c.name).join(', ')}</td>
+                    <td class="border border-slate-400 p-1.5">${item.status || 'Beklemede'}</td>
+                </tr>
+            `).join('');
+
+            // Yazdırma sırasında alındı belgesi açık kalmışsa geçici gizle
+            const receiptEl = document.getElementById('receipt-section');
+            const wasReceiptVisible = !receiptEl.classList.contains('hidden');
+            if (wasReceiptVisible) receiptEl.classList.add('hidden');
+
+            window.print();
+
+            if (wasReceiptVisible) receiptEl.classList.remove('hidden');
+        }
+
+        function openDocModal(trackingId) {
+            const item = (window.submissions || []).find(s => s.trackingId === trackingId);
+            if (!item) return;
+
+            const modal = document.getElementById('doc-viewer-modal');
+            const titleEl = document.getElementById('modal-doc-title');
+            const subtitleEl = document.getElementById('modal-doc-subtitle');
+            const bodyEl = document.getElementById('modal-doc-body');
+            const downloadLink = document.getElementById('modal-doc-download');
+
+            titleEl.textContent = `${item.studentName} (${item.classSection}) - ${item.fileName}`;
+            subtitleEl.textContent = `${item.excuseType} • Takip No: ${item.trackingId} • Durum: ${item.status || 'Beklemede'}`;
+
+            if (item.fileData) {
+                downloadLink.href = item.fileData;
+                downloadLink.setAttribute('download', `${item.classSection.replace('/', '-')}_${item.studentNumber}_${item.fileName}`);
+                downloadLink.classList.remove('hidden');
+
+                if (item.fileType && item.fileType.startsWith('image/')) {
+                    bodyEl.innerHTML = `<img src="${item.fileData}" alt="${item.fileName}" class="max-w-full max-h-[68vh] rounded-xl shadow-md object-contain">`;
+                } else if (item.fileType === 'application/pdf') {
+                    bodyEl.innerHTML = `<iframe src="${item.fileData}" class="w-full h-[68vh] rounded-xl border border-slate-300 bg-white"></iframe>`;
+                } else {
+                    bodyEl.innerHTML = `<p class="text-sm text-slate-600">Dosya önizlemesi desteklenmiyor: <strong>${item.fileName}</strong></p>`;
+                }
+            } else {
+                downloadLink.classList.add('hidden');
+                bodyEl.innerHTML = `
+                    <div class="text-center p-6 space-y-2 max-w-md">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 mx-auto flex items-center justify-center">
+                            <i data-lucide="file-warning" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-sm font-bold text-slate-800">${item.fileName}</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Bu PDF belgesi boyutu nedeniyle yalnızca dosya adı ve başvuru kaydıyla saklanmıştır. Lütfen belgenin aslını veya küçük boyutlu/görsel kopyasını kontrol ediniz.
+                        </p>
+                    </div>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeDocModal() {
+            document.getElementById('doc-viewer-modal').classList.add('hidden');
+            document.getElementById('modal-doc-body').innerHTML = '';
+        }
+
+        function viewReceiptFromAdmin(trackingId) {
+            const item = (window.submissions || []).find(s => s.trackingId === trackingId);
+            if (!item) return;
+            populateReceipt(item);
+            switchTab('form');
+            document.getElementById('excuse-form').classList.add('hidden');
+            document.getElementById('receipt-section').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Excel (CSV) Dışa Aktarma
+        function exportToCSV() {
+            const exportList = getFilteredSubmissions();
+            if (exportList.length === 0) {
+                showToast('Kayıt Bulunamadı', 'Dışa aktarılacak herhangi bir başvuru kaydı bulunmamaktadır.', 'error');
+                return;
+            }
+
+            const headers = ['Takip No', 'Başvuru Tarihi', 'Onay Durumu', 'Öğrenci Adı Soyadı', 'Sınıf/Şube', 'Okul No', 'Veli Adı Soyadı', 'Telefon', 'Mazeret Türü', 'Katılınamayan Dersler', 'Gerekçe', 'Ekli Belge'];
+            const rows = exportList.map(s => [
+                s.trackingId,
+                s.timestamp,
+                s.status || 'Beklemede',
+                s.studentName,
+                s.classSection,
+                s.studentNumber,
+                s.parentName,
+                s.parentPhone,
+                s.excuseType,
+                (s.courses || []).map(c => `${c.name} (${c.date})`).join(' | '),
+                (s.excuseReason || '').replace(/(\r\n|\n|\r)/gm, ' '),
+                s.fileName
+            ]);
+
+            // Türkçe karakter uyumu için UTF-8 BOM ekle
+            const csvContent = '\uFEFF' + [headers, ...rows]
+                .map(row => row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(';'))
+                .join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Saffet_Cam_Ortaokulu_Mazeret_Basvurulari_2026.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Yardımcı Fonksiyonlar
+        function formatDateTR(isoDate) {
+            if (!isoDate) return '-';
+            const [y, m, d] = isoDate.split('-');
+            return `${d}.${m}.${y}`;
+        }
+
+        let toastTimer;
+        function showToast(title, message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const iconEl = document.getElementById('toast-icon');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-message').textContent = message;
+
+            if (type === 'success') {
+                container.classList.remove('border-meb-red');
+                container.classList.add('border-emerald-600');
+                iconEl.className = 'text-emerald-600 mt-0.5';
+                iconEl.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5"></i>`;
+            } else {
+                container.classList.remove('border-emerald-600');
+                container.classList.add('border-meb-red');
+                iconEl.className = 'text-meb-red mt-0.5';
+                iconEl.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5"></i>`;
+            }
+            lucide.createIcons();
+
+            container.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(hideToast, 5000);
+        }
+
+        function hideToast() {
+            document.getElementById('toast-container').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
