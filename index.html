@@ -829,7 +829,7 @@
     <!-- Google Apps Script & E-Tablo / Drive Entegrasyonu -->
     <script>
         // =========================================================================
-        // GOOGLE APPS SCRIPT WEB APP BAĞLANTI ADRESİ (Yetkilendirilmiş Yeni Dağıtım)
+        // GOOGLE APPS SCRIPT WEB APP BAĞLANTI ADRESİ (Yetkilendirilmiş Dağıtım)
         // =========================================================================
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVw7kFpm9skN3Wl4tH0zjD9_RHus0D9o2bSMycpS1cEz0hXkXJFmSnQH3kqXNH5RjB/exec";
         const GOOGLE_SHEET_EDIT_URL = "https://docs.google.com/spreadsheets/d/1Tj4l3Pa6sj-rcW_qUfdTHqbCdwsyDz8YpfqxVQoxw6s/edit";
@@ -894,6 +894,22 @@
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: bodyString
                 });
+                let json = null;
+                try {
+                    json = await res.json();
+                } catch (_) {}
+                return { ok: true, data: json };
+            } catch (err) {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: bodyString
+                });
+                return { ok: true, data: null };
+            }
+        }
+
         // Google Apps Script Web App'e yeni başvuru ve Base64 belge gönderme (POST - CORS Uyumlu)
         window.sendSubmissionToGoogleSheet = async function(submissionObj) {
             if (!isGoogleScriptConfigured()) return { sent: false, reason: 'not_configured' };
@@ -920,34 +936,19 @@
 
             updateGoogleSyncBadge('syncing', 'E-Tabloya Gönderiliyor...');
             try {
-                const res = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    redirect: 'follow',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
-                });
-                let driveUrl = '';
-                try {
-                    const json = await res.json();
-                    if (json && json.driveUrl) {
-                        driveUrl = json.driveUrl;
-                        submissionObj.driveUrl = driveUrl;
-                        saveLocalSubmissions(window.submissions || []);
-                        if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
-                    }
-                } catch (_) {}
-                updateGoogleSyncBadge('connected', 'Google E-Tablo Bağlı');
+                const result = await postToGoogleAppsScript(payload);
+                const driveUrl = result.data && result.data.driveUrl ? result.data.driveUrl : '';
+                if (driveUrl) {
+                    submissionObj.driveUrl = driveUrl;
+                    saveLocalSubmissions(window.submissions || []);
+                    if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
+                }
+                updateGoogleSyncBadge('connected', 'Google E-Tablolar Bağlı');
                 return { sent: true, driveUrl };
             } catch (err) {
-                // Tarayıcı yönlendirme yanıtını kısıtlarsa no-cors yedek gönderimi dene
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
-                });
-                updateGoogleSyncBadge('connected', 'Google E-Tablo Bağlı');
-                return { sent: true };
+                console.error('Google E-Tablo gönderim hatası:', err);
+                updateGoogleSyncBadge('error', 'Gönderim Hatası');
+                return { sent: false, error: err };
             }
         };
 
@@ -1042,21 +1043,7 @@
             if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
 
             if (isGoogleScriptConfigured()) {
-                try {
-                    await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST',
-                        redirect: 'follow',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'updateStatus', trackingId, status: newStatus })
-                    });
-                } catch (_) {
-                    await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'updateStatus', trackingId, status: newStatus })
-                    });
-                }
+                await postToGoogleAppsScript({ action: 'updateStatus', trackingId, status: newStatus });
             }
         };
 
@@ -1067,21 +1054,7 @@
             if (typeof window.renderAdminTable === 'function') window.renderAdminTable();
 
             if (isGoogleScriptConfigured()) {
-                try {
-                    await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST',
-                        redirect: 'follow',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'delete', trackingId })
-                    });
-                } catch (_) {
-                    await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'delete', trackingId })
-                    });
-                }
+                await postToGoogleAppsScript({ action: 'delete', trackingId });
             }
         };
     </script>
@@ -2605,29 +2578,6 @@
             document.execCommand('copy');
             document.body.removeChild(tempArea);
             showToast('Duyuru Kopyalandı', 'Duyuru metni ve başvuru linki panoya kopyalandı. Veli gruplarında paylaşabilirsiniz.', 'success');
-        }
-            lucide.createIcons();
-        }
-
-        function toggleAnnouncement() {
-            const body = document.getElementById('announcement-body');
-            const btn = document.getElementById('announcement-toggle-btn');
-            const isHidden = body.classList.toggle('hidden');
-            btn.innerHTML = isHidden
-                ? '<i data-lucide="chevron-down" class="w-4 h-4"></i>'
-                : '<i data-lucide="chevron-up" class="w-4 h-4"></i>';
-            lucide.createIcons();
-        }
-
-        function copyAnnouncement() {
-            const text = `T.C. YALOVA VALİLİĞİ - Saffet Çam Ortaokulu Müdürlüğü\n\nDeğerli Velilerimiz ve Sevgili Öğrencilerimiz,\nOkulumuzda 03 - 13 Kasım 2026 tarihleri arasında gerçekleştirilen 1. Dönem 1. Ortak Yazılı Sınavlarına; sağlık raporu, resmi izin belgesi veya okul idaresince kabul edilebilir geçerli bir mazereti nedeniyle katılamayan öğrencilerimiz için 23 - 27 Kasım 2026 tarihleri arasında mazeret sınavları yapılacaktır.\n\nMazeret sınavlarına katılacak öğrencilerimizin mağduriyet yaşamamaları adına; sağlık raporlarını, izin belgelerini veya geçerli mazeretlerini gösterir resmî belgelerini başvuru formunu eksiksiz doldurarak en geç 20 Kasım 2026 Cuma günü mesai bitimine kadar okulumuz müdürlüğüne bildirmeleri gerekmektedir.`;
-            const tempArea = document.createElement('textarea');
-            tempArea.value = text;
-            document.body.appendChild(tempArea);
-            tempArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempArea);
-            showToast('Duyuru Kopyalandı', 'Duyuru metni panoya kopyalandı. Veli gruplarında paylaşabilirsiniz.', 'success');
         }
 
         function resetForm() {
